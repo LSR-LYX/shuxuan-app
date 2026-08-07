@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>树与璇 · 安装到手机</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: radial-gradient(900px 600px at 15% 8%, #FFE9F2 0%, transparent 60%),
+                radial-gradient(800px 600px at 88% 92%, #EDE4FF 0%, transparent 55%),
+                linear-gradient(160deg, #FDF2F7, #F6EEFF);
+    min-height: 100vh; padding: 40px 16px; color: #3D2B4F;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .wrap { max-width: 620px; width: 100%; }
+  .logo { text-align: center; margin-bottom: 26px; }
+  .logo img { width: 84px; height: 84px; border-radius: 22px; box-shadow: 0 16px 36px rgba(255,107,157,.35); }
+  .logo h1 { font-size: 26px; margin-top: 14px; letter-spacing: 1px; }
+  .logo p { color: #8A7A9C; font-size: 13px; margin-top: 6px; }
+  .card {
+    background: #fff; border-radius: 22px; padding: 24px; margin-top: 18px;
+    box-shadow: 0 10px 30px rgba(140,90,210,.12);
+  }
+  .card h2 { font-size: 17px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .card h2 .step-no {
+    width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+    background: linear-gradient(135deg, #FF6B9D, #B388FF); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 14px;
+  }
+  .qr-wrap { text-align: center; }
+  .qr-wrap img { width: 220px; height: 220px; border-radius: 14px; border: 2px solid #F3E6F5; }
+  .qr-wrap .url { margin-top: 12px; font-size: 12px; color: #8A7A9C; word-break: break-all; }
+  ol { padding-left: 20px; line-height: 2; font-size: 14px; }
+  li b { color: #F43F7E; }
+  .tip { background: #FFF0F6; border: 1.5px dashed #FFB7D0; border-radius: 14px; padding: 12px 14px; font-size: 13px; color: #B0577F; line-height: 1.8; margin-top: 14px; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 999px; background: #E9F7F0; color: #2FA374; font-size: 12px; font-weight: 700; margin-left: 6px; }
+  .foot { margin-top: 26px; text-align: center; font-size: 12px; color: #B9A8CB; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="logo">
+    <img src="icons/icon-192.png" alt="树与璇">
+    <h1>树与璇 <span style="font-size:13px;color:#8A7A9C;">Shu &amp; Xuan</span></h1>
+    <p>树树 &amp; 璇璇 的专属小屋 · 心情 / 纪念日 / 相册 / 提醒</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="step-no">1</span> 在手机上打开 App <span class="badge">安卓 / 苹果都行</span></h2>
+    <div class="qr-wrap">
+      <img src="qrcode.png" alt="扫码打开">
+      <div class="url">手机浏览器扫码，或直接访问：<br><b>https://lsr-lyx.github.io/shuxuan-app/</b></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="step-no">2</span> 方式 A：添加到主屏幕（最简，免打包）</h2>
+    <ol>
+      <li>用手机浏览器（Chrome / Edge / 夸克等）打开上面的链接</li>
+      <li>点浏览器菜单 <b>⋮</b> → 选择 <b>「添加到主屏幕」/「安装应用」</b></li>
+      <li>桌面就会出现「树与璇」图标，点开就是<b>全屏 App</b>，还能离线使用</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2><span class="step-no">3</span> 方式 B：打包成 APK 安装（真正的安装包）</h2>
+    <ol>
+      <li>电脑打开 <b>https://www.pwabuilder.com</b>（微软官方，免费）</li>
+      <li>在输入框粘贴上面的 App 链接，点 <b>Start</b></li>
+      <li>点 <b>Package for stores</b> → 选 <b>Android</b> → <b>Download</b></li>
+      <li>下载得到 <b>xxx.apk</b>，传到手机点击安装即可（首次需允许"安装未知应用"）</li>
+    </ol>
+    <div class="tip">💡 注意：PWA Builder 打包时需要站点在公网可访问（已满足）。打包出的 APK 是正式安装包，可以分享给树宝一起装。</div>
+  </div>
+
+  <div class="foot">恋心工作室 · 树与璇 v1.0 · 2026-08-05</div>
+</div>
+</body>
+</html>

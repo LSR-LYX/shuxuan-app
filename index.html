@@ -1,0 +1,2373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FF6B9D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="树与璇">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<title>树与璇 · 情侣专属 App</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --daisy: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><ellipse cx='16' cy='5' rx='3' ry='7' fill='%23FFFDF5' stroke='%23E9C96B' stroke-width='0.7'/><ellipse cx='16' cy='5' rx='3' ry='7' fill='%23FFFDF5' stroke='%23E9C96B' stroke-width='0.7' transform='rotate(45 16 16)'/><ellipse cx='16' cy='5' rx='3' ry='7' fill='%23FFFDF5' stroke='%23E9C96B' stroke-width='0.7' transform='rotate(90 16 16)'/><ellipse cx='16' cy='5' rx='3' ry='7' fill='%23FFFDF5' stroke='%23E9C96B' stroke-width='0.7' transform='rotate(135 16 16)'/><ellipse cx='16' cy='5' rx='3' ry='7' fill='%23FFFDF5' stroke='%23E9C96B' stroke-width='0.7' transform='rotate(180 16 16)'/><ellipse cx='16' cy='5' rx='3' ry='7' fill='%23FFFDF5' stroke='%23E9C96B' stroke-width='0.7' transform='rotate(225 16 16)'/><ellipse cx='16' cy='5' rx='3' ry='7' fill='%23FFFDF5' stroke='%23E9C96B' stroke-width='0.7' transform='rotate(270 16 16)'/><ellipse cx='16' cy='5' rx='3' ry='7' fill='%23FFFDF5' stroke='%23E9C96B' stroke-width='0.7' transform='rotate(315 16 16)'/><circle cx='16' cy='16' r='5.2' fill='%23F7C948'/><circle cx='16' cy='16' r='2.4' fill='%23F0A92E'/></svg>");
+    --pink: #FF6B9D;
+    --pink-deep: #F43F7E;
+    --purple: #8B5CF6;
+    --violet: #B388FF;
+    --orange: #FF9A5C;
+    --mint: #4CD9A9;
+    --yellow: #FFC94D;
+    --ink: #3D2B4F;
+    --ink-soft: #8A7A9C;
+    --bg: #FFF5F9;
+    --card: #FFFFFF;
+    --grad-main: linear-gradient(135deg, #FF6B9D 0%, #B388FF 100%);
+    --grad-soft: linear-gradient(135deg, #FFE3EE 0%, #EFE4FF 100%);
+    --shadow: 0 8px 24px rgba(255, 107, 157, .16);
+    --radius: 24px;
+  }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+    background: radial-gradient(1200px 800px at 20% 10%, #FFE9F2 0%, transparent 60%),
+                radial-gradient(1000px 700px at 85% 90%, #EDE4FF 0%, transparent 55%),
+                linear-gradient(160deg, #FDF2F7 0%, #F6EEFF 100%);
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 24px 16px; color: var(--ink);
+  }
+  /* 页面介绍栏 */
+  .intro {
+    max-width: 360px; margin-right: 40px; color: var(--ink);
+  }
+  .intro h1 { font-size: 30px; line-height: 1.3; margin-bottom: 14px; }
+  .intro h1 .grad { background: var(--grad-main); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .intro p { color: var(--ink-soft); font-size: 14px; line-height: 1.8; margin-bottom: 18px; }
+  .intro .tips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .intro .tips span {
+    font-size: 12px; padding: 6px 12px; border-radius: 999px;
+    background: #fff; box-shadow: 0 4px 12px rgba(140,90,210,.10); color: var(--ink-soft);
+  }
+  /* ===== 应用视口（无外框，直接铺在渐变背景上） ===== */
+  .phone {
+    width: 390px; height: 844px; border-radius: 44px; position: relative;
+    flex-shrink: 0; overflow: hidden;
+    box-shadow: 0 30px 60px rgba(140,90,210,.20);
+  }
+  .phone .screen {
+    position: absolute; inset: 0; overflow: hidden;
+    background: transparent;
+  }
+
+  /* ===== 页面容器 ===== */
+  .page {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    opacity: 0; pointer-events: none; transform: translateY(14px) scale(.985);
+    transition: opacity .38s ease, transform .38s ease; overflow-y: auto; overflow-x: hidden;
+  }
+  .page.active { opacity: 1; pointer-events: auto; transform: none; }
+  .page::-webkit-scrollbar { display: none; }
+  .pad { padding: 0 22px; }
+
+  /* ===== 通用 ===== */
+  .grad-text { background: var(--grad-main); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .btn-main {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 16px; border: none; border-radius: 18px;
+    background: var(--grad-main); color: #fff; font-size: 16px; font-weight: 700;
+    cursor: pointer; box-shadow: 0 10px 24px rgba(255,107,157,.35);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-main:active { transform: scale(.97); box-shadow: 0 6px 14px rgba(255,107,157,.3); }
+  .btn-ghost {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 15px; border: 2px solid #FFD3E4; border-radius: 18px;
+    background: #fff; color: var(--pink); font-size: 15px; font-weight: 600; cursor: pointer;
+  }
+  .btn-danger {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 15px; border: 2px solid #FFD0D0; border-radius: 18px;
+    background: #fff; color: #F86; font-size: 15px; font-weight: 600; cursor: pointer;
+  }
+  /* 自定义纪念日详情面板 */
+  .ad-icon {
+    width: 64px; height: 64px; margin: 6px auto 14px; border-radius: 22px;
+    background: linear-gradient(135deg, #FFF3F6, #F6E8FF); font-size: 34px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 20px rgba(255,150,180,.22);
+  }
+  .ad-row { display: flex; gap: 10px; margin-top: 6px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px;
+    border-radius: 999px; background: #fff; font-size: 13px; font-weight: 600;
+    box-shadow: 0 6px 16px rgba(140,90,210,.12); cursor: pointer; border: none; color: var(--ink);
+    transition: transform .15s ease;
+  }
+  .chip:active { transform: scale(.95); }
+  .toast {
+    position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: rgba(61,43,79,.92); color: #fff; padding: 12px 20px; border-radius: 999px;
+    font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; z-index: 200;
+    transition: opacity .3s ease, transform .3s ease; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ===== 登录页 ===== */
+  #page-login { background: var(--grad-main); justify-content: center; color: #fff; }
+  .login-heart { text-align: center; margin-bottom: 34px; }
+  .login-heart .logo {
+    width: 96px; height: 96px; margin: 0 auto 18px; border-radius: 32px;
+    background: rgba(255,255,255,.18); backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center; font-size: 46px;
+    box-shadow: 0 20px 40px rgba(0,0,0,.15); animation: floaty 3s ease-in-out infinite;
+  }
+  @keyframes floaty { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-8px);} }
+  .login-heart h1 { font-size: 34px; letter-spacing: 2px; margin-bottom: 8px; }
+  .login-heart p { opacity: .85; font-size: 14px; letter-spacing: 1px; }
+  .login-card {
+    background: #fff; border-radius: 32px; padding: 28px 24px; margin: 0 22px;
+    box-shadow: 0 24px 60px rgba(0,0,0,.22); color: var(--ink);
+  }
+  .field {
+    border: 2px solid #F3E6F5; border-radius: 16px; padding: 14px 16px; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 10px; background: #FDF8FC;
+  }
+  .field .ic { font-size: 18px; }
+  .field input { flex: 1; border: none; outline: none; background: transparent; font-size: 15px; color: var(--ink); }
+  .field input::placeholder { color: #C9B8D6; }
+  .field .code-btn { font-size: 12px; color: var(--pink); font-weight: 700; cursor: pointer; white-space: nowrap; }
+  .login-card .btn-main { margin-top: 8px; }
+  /* 版本号标签：右下角小字，不干扰主内容 */
+  .ver-tag { text-align: center; font-size: 11px; color: #C4A9D6; letter-spacing: .5px; user-select: none; }
+  #page-login .ver-tag { color: rgba(255,255,255,.55); }
+
+  /* ===== 首页 ===== */
+  /* 首页用普通流式布局：flex 容器会压缩子组件导致显示不全，必须 display:block 让内容自然撑开滚动 */
+  #page-home { display: block; background: linear-gradient(180deg, #FFE9F3 0%, var(--bg) 38%); }
+  #page-home > * { flex-shrink: 0; }
+  .home-head {
+    padding: 24px 22px 14px; display: flex; align-items: center; justify-content: space-between;
+    width: 100%; box-sizing: border-box;
+    background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.30));
+    border-bottom: 1px solid #FCE7F0;
+  }
+  .home-head .names { display: flex; align-items: center; gap: 10px; flex: 1; }
+  .avatar { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; position: relative; }
+  .avatar.me { background: linear-gradient(135deg, #FFC94D, #FF9A5C); }
+  .avatar.ta { background: linear-gradient(135deg, #B388FF, #8B5CF6); }
+  .avatar .ring { position: absolute; inset: -4px; border-radius: 50%; border: 2.5px solid #FFB7D0; animation: pulseRing 2.4s ease-in-out infinite; }
+  @keyframes pulseRing { 0%,100% { transform: scale(1); opacity: .8;} 50% { transform: scale(1.12); opacity: .2;} }
+  .home-head .names .who { font-size: 15px; font-weight: 800; }
+  .home-head .names .sub { font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
+  .icon-btn {
+    width: 42px; height: 42px; border-radius: 50%; background: #fff; border: none; font-size: 18px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    box-shadow: 0 6px 16px rgba(140,90,210,.14); transition: transform .15s ease;
+  }
+  .icon-btn:active { transform: scale(.9) rotate(-8deg); }
+
+  /* 纪念日卡片 */
+  .days-card {
+    margin: 18px 22px 0; padding: 18px 20px; border-radius: var(--radius);
+    background: var(--grad-main); color: #fff; display: flex; align-items: center; justify-content: space-between;
+    box-shadow: var(--shadow); position: relative; overflow: hidden;
+  }
+  .days-card::after {
+    content: "💞"; position: absolute; right: -8px; bottom: -14px; font-size: 64px; opacity: .25;
+  }
+  .days-card .d-num { font-size: 34px; font-weight: 900; line-height: 1; }
+  .days-card .d-label { font-size: 12px; opacity: .9; margin-top: 4px; }
+  .days-card .d-next { text-align: right; font-size: 12px; opacity: .95; line-height: 1.6; }
+  .days-card .days-edit-hint { position: absolute; bottom: 6px; right: 16px; font-size: 10px; opacity: .55; z-index: 2; }
+  .days-card { cursor: pointer; }
+  .days-card:active { transform: scale(.985); }
+
+  /* 对方心情卡片 */
+  .mood-card {
+    margin: 16px 22px 0; border-radius: var(--radius); background: var(--card);
+    box-shadow: var(--shadow); padding: 20px; position: relative; overflow: hidden;
+  }
+  .mood-card .m-head { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink-soft); font-weight: 600; }
+  .mood-card .m-head .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 4px rgba(76,217,169,.2); }
+  .mood-card .m-body { display: flex; align-items: center; gap: 16px; margin-top: 14px; }
+  .mood-emoji {
+    width: 84px; height: 84px; border-radius: 26px; background: var(--grad-soft);
+    display: flex; align-items: center; justify-content: center; font-size: 44px; flex-shrink: 0;
+    animation: heartbeat 1.6s ease-in-out infinite;
+  }
+  @keyframes heartbeat { 0%,100% { transform: scale(1);} 25% { transform: scale(1.1);} 40% { transform: scale(1.02);} 55% { transform: scale(1.08);} }
+  .mood-card .m-txt h3 { font-size: 20px; margin-bottom: 4px; }
+  .mood-card .m-txt p { font-size: 12.5px; color: var(--ink-soft); line-height: 1.6; }
+  .mood-card .m-txt .time { font-size: 11px; color: #C9B8D6; margin-top: 6px; }
+  .mood-card .m-actions { display: flex; gap: 10px; margin-top: 16px; }
+  .mood-card .m-actions .btn-main { width: auto; flex: 1; padding: 12px; font-size: 14px; border-radius: 14px; }
+  .mood-card .m-actions .btn-ghost { width: auto; flex: 1; padding: 12px; font-size: 14px; border-radius: 14px; }
+
+  /* 快捷动作：横向滑动，所有提醒都可显示 */
+  .quick-note { display: flex; align-items: center; gap: 6px; margin: 18px 22px 0; font-size: 12px; color: var(--ink-soft); font-weight: 600; }
+  .quick-note .hint { margin-left: auto; font-weight: 500; color: #C9B8D6; font-size: 11px; }
+  .quick-scroll {
+    display: flex; gap: 12px; margin: 16px 22px 0;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    padding: 4px 2px 12px; scrollbar-width: thin; scrollbar-color: #E4D3EF transparent;
+  }
+  .quick-scroll::-webkit-scrollbar { height: 4px; }
+  .quick-scroll::-webkit-scrollbar-thumb { background: #E4D3EF; border-radius: 4px; }
+  .quick-scroll::-webkit-scrollbar-track { background: transparent; }
+  .quick-item {
+    flex: 0 0 auto; width: 88px;
+    background: #fff; border-radius: 20px; padding: 14px 8px; text-align: center; cursor: pointer;
+    box-shadow: 0 6px 16px rgba(140,90,210,.10); border: none; transition: transform .15s ease;
+  }
+  .quick-item:active { transform: scale(.93); }
+  .quick-item .q-ic { font-size: 26px; }
+  .quick-item .q-tx { font-size: 12px; font-weight: 700; margin-top: 6px; color: var(--ink); white-space: nowrap; }
+
+  /* 今日互动 */
+  .today-row { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px dashed #F3E6F5; font-size: 13px; }
+  .today-row:last-child { border-bottom: none; }
+  .today-row .t-ic { width: 34px; height: 34px; border-radius: 12px; background: var(--grad-soft); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .today-row .t-tx { flex: 1; }
+  .today-row .t-tx b { font-size: 13.5px; }
+  .today-row .t-tx small { display: block; color: var(--ink-soft); font-size: 11px; margin-top: 2px; }
+  .today-row .t-time { font-size: 11px; color: #C9B8D6; }
+
+  /* ===== 底部 Tab ===== */
+  .tabbar {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 84px; z-index: 80;
+    background: rgba(255,255,255,.92); backdrop-filter: blur(18px);
+    border-top: 1px solid #F5E9F2; display: flex; align-items: center; justify-content: space-around;
+    padding-bottom: 22px;
+  }
+  .tab-btn { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; font-size: 10.5px; color: #B9A8CB; font-weight: 600; transition: color .2s; }
+  .tab-btn .t-ic { font-size: 22px; filter: grayscale(1) opacity(.55); transition: all .2s; }
+  .tab-btn.on { color: var(--pink); }
+  .tab-btn.on .t-ic { filter: none; transform: scale(1.12); }
+
+  /* ===== 聊天页 ===== */
+  #page-chat { background: linear-gradient(180deg, #FFE9F3 0%, #FFF7FB 30%); flex: 1; overflow: hidden; padding-bottom: 70px; }
+  .chat-head { padding: 18px 22px 14px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #F5E9F2; background: rgba(255,255,255,.6); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 10; }
+  .chat-head .avatar { width: 40px; height: 40px; font-size: 19px; }
+  .chat-head .who { flex: 1; }
+  .chat-head .who b { font-size: 15px; display: block; }
+  .chat-head .who small { font-size: 11px; color: var(--mint); font-weight: 600; }
+  .chat-head .bell {
+    width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--grad-main);
+    color: #fff; font-size: 17px; cursor: pointer; box-shadow: 0 6px 14px rgba(255,107,157,.35);
+    transition: transform .15s ease; display: flex; align-items: center; justify-content: center;
+  }
+  .chat-head .bell:active { transform: rotate(18deg) scale(1.1); }
+  .chat-head .bell.chat-clear { background: #FFE9EF; color: var(--pink); box-shadow: none; width: 36px; height: 36px; font-size: 15px; }
+  .chat-head .bell.chat-clear.armed { background: var(--pink); color: #fff; }
+  .chat-empty { text-align: center; padding: 46px 0 20px; opacity: .75; animation: popIn .3s ease; }
+  .chat-empty .ce-box {
+    width: 62px; height: 62px; border-radius: 50%; margin: 0 auto 14px;
+    background: linear-gradient(135deg, #FFE9F3, #F3E6F5); display: flex;
+    align-items: center; justify-content: center; font-size: 27px;
+  }
+  .chat-empty p { font-size: 13px; color: #C9B8D6; line-height: 1.8; }
+  .chat-body { flex: 1; min-height: 0; padding: 18px 22px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+  .bubble { max-width: 74%; padding: 12px 15px; border-radius: 20px; font-size: 14.5px; line-height: 1.6; animation: popIn .3s ease; }
+  @keyframes popIn { from { opacity: 0; transform: translateY(8px) scale(.96);} to { opacity: 1; transform: none;} }
+  .bubble.ta {
+    align-self: flex-start; background-color: #fff;
+    box-shadow: 0 4px 12px rgba(140,90,210,.10); border-bottom-left-radius: 6px;
+    position: relative;
+    background-image: var(--daisy), var(--daisy), var(--daisy);
+    background-repeat: no-repeat;
+    background-size: 14px 14px;
+    background-position: calc(100% - 3px) 3px, 3px calc(100% - 3px), 50% 100%;
+  }
+  .bubble.ta::before, .bubble.ta::after {
+    content: ''; position: absolute; width: 16px; height: 16px; pointer-events: none;
+    background: var(--daisy) center / 100% 100% no-repeat;
+    animation: daisyFloat 3.4s ease-in-out infinite;
+  }
+  .bubble.ta::before { left: -8px; top: -8px; }
+  .bubble.ta::after { right: -8px; bottom: -8px; animation-delay: 1.6s; }
+  @keyframes daisyFloat { 0%, 100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-3px) rotate(3deg); } }
+  .bubble.me { align-self: flex-end; background: var(--grad-main); color: #fff; border-bottom-right-radius: 6px; box-shadow: 0 6px 14px rgba(255,107,157,.3); }
+  .bubble .b-time { display: block; font-size: 10px; opacity: .7; margin-top: 4px; text-align: right; }
+  .chat-date { align-self: center; font-size: 11px; color: #C9B8D6; background: rgba(255,255,255,.7); padding: 5px 14px; border-radius: 999px; }
+  .typing { align-self: flex-start; display: flex; gap: 4px; background: #fff; padding: 14px 16px; border-radius: 20px; box-shadow: 0 4px 12px rgba(140,90,210,.10); }
+  .typing i { width: 7px; height: 7px; border-radius: 50%; background: #D9C6E8; animation: typing 1.2s infinite; }
+  .typing i:nth-child(2) { animation-delay: .2s; } .typing i:nth-child(3) { animation-delay: .4s; }
+  @keyframes typing { 0%,100% { transform: translateY(0); opacity: .5;} 50% { transform: translateY(-5px); opacity: 1;} }
+  .chat-input {
+    flex-shrink: 0; position: sticky; bottom: 0; z-index: 5;
+    padding: 12px 18px 30px; display: flex; gap: 10px; align-items: center;
+    background: rgba(255,255,255,.85); backdrop-filter: blur(14px); border-top: 1px solid #F5E9F2;
+  }
+  .chat-input input {
+    flex: 1; min-width: 0; border: none; outline: none; background: #F6EEF8; padding: 13px 18px; border-radius: 999px;
+    font-size: 14.5px; color: var(--ink);
+  }
+  .chat-input input::placeholder { color: #C9B8D6; }
+  .chat-input .send {
+    width: 46px; height: 46px; flex-shrink: 0; border-radius: 50%; border: none; background: var(--grad-main);
+    color: #fff; font-size: 19px; cursor: pointer; box-shadow: 0 6px 14px rgba(255,107,157,.35);
+    display: flex; align-items: center; justify-content: center; transition: transform .15s;
+  }
+  .chat-input .send:active { transform: scale(.9); }
+  .chat-input .remind {
+    width: 46px; height: 46px; flex-shrink: 0; border-radius: 50%; border: 2px solid #FFD3E4; background: #fff;
+    color: var(--pink); font-size: 19px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ===== 心情页 ===== */
+  #page-mood { display: block; background: linear-gradient(180deg, #EFE4FF 0%, var(--bg) 40%); }
+  #page-mood > * { flex-shrink: 0; }
+  .mood-head { padding: 64px 22px 8px; }
+  .mood-head h2 { font-size: 24px; }
+  .mood-head p { color: var(--ink-soft); font-size: 13px; margin-top: 6px; }
+  .mood-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 20px 22px; }
+  .mood-opt {
+    background: #fff; border-radius: 22px; padding: 20px 16px; text-align: center; cursor: pointer;
+    box-shadow: 0 6px 16px rgba(140,90,210,.10); border: 3px solid transparent; transition: all .2s;
+    position: relative;
+  }
+  .mood-opt .mood-del {
+    position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%;
+    border: none; background: rgba(255,107,157,.13); color: var(--pink); font-size: 11px; font-weight: 800;
+    cursor: pointer; line-height: 1; z-index: 2;
+  }
+  .mood-opt .mood-del:active { transform: scale(.9); }
+  .mood-opt .m-ic { font-size: 40px; display: block; transition: transform .2s; }
+  .mood-opt .m-name { font-size: 14px; font-weight: 800; margin-top: 8px; display: block; }
+  .mood-opt .m-desc { font-size: 11px; color: var(--ink-soft); margin-top: 4px; display: block; }
+  .mood-opt.on { border-color: var(--pink); background: #FFF0F6; box-shadow: 0 10px 24px rgba(255,107,157,.22); }
+  .mood-opt.on .m-ic { transform: scale(1.18) rotate(-6deg); }
+  .mood-save { padding: 4px 22px 120px; }
+  .mood-preview {
+    margin: 4px 22px 0; background: #fff; border-radius: var(--radius); padding: 18px;
+    box-shadow: var(--shadow); display: flex; align-items: center; gap: 14px; font-size: 13px;
+  }
+  .mood-preview .pv-emoji { font-size: 34px; animation: heartbeat 1.6s infinite; }
+  .mood-mine {
+    margin: 14px 22px 0; background: linear-gradient(135deg, #FF6B9D 0%, #B388FF 100%); border-radius: 22px;
+    padding: 18px; display: flex; align-items: center; gap: 14px; color: #fff;
+    box-shadow: 0 10px 24px rgba(255,107,157,.28); position: relative; overflow: hidden;
+  }
+  .mood-mine::after { content:''; position:absolute; right:-26px; top:-26px; width:110px; height:110px; border-radius:50%; background:rgba(255,255,255,.13); }
+  .mood-mine .mm-emoji { font-size: 38px; filter: drop-shadow(0 4px 8px rgba(0,0,0,.16)); }
+  .mood-mine .mm-info { flex: 1; min-width: 0; position: relative; z-index: 1; }
+  .mood-mine .mm-info b { font-size: 15px; display: block; }
+  .mood-mine .mm-info small { display: block; font-size: 11.5px; opacity: .88; margin-top: 3px; }
+  .mood-mine .mm-time { font-size: 10.5px; opacity: .72; }
+  .mood-mine .mm-clear {
+    position: relative; z-index: 1; background: rgba(255,255,255,.24); border: none; color: #fff;
+    font-size: 12px; font-weight: 700; padding: 8px 12px; border-radius: 99px; cursor: pointer; flex-shrink: 0;
+  }
+  .mood-mine.empty { background: #fff; color: var(--ink); box-shadow: var(--shadow); }
+  .mood-mine.empty::after { display: none; }
+  .mood-mine.empty .mm-emoji { filter: none; }
+  .mood-mine.empty .mm-clear { display: none; }
+
+  /* ===== 提醒弹窗 ===== */
+  .overlay {
+    position: absolute; inset: 0; background: rgba(61,43,79,.45); z-index: 150;
+    display: flex; align-items: flex-end; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .3s ease; backdrop-filter: blur(4px);
+  }
+  .overlay.show { opacity: 1; pointer-events: auto; }
+  .sheet {
+    width: 100%; background: #fff; border-radius: 32px 32px 0 0; padding: 26px 22px 40px;
+    transform: translateY(100%); transition: transform .38s cubic-bezier(.2,.9,.3,1);
+    max-height: 88vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  }
+  .overlay.show .sheet { transform: none; }
+  .sheet .grab { width: 44px; height: 5px; border-radius: 99px; background: #E9DCF0; margin: 0 auto 20px; }
+  .sheet h3 { font-size: 18px; margin-bottom: 6px; }
+  .sheet .sub { font-size: 12.5px; color: var(--ink-soft); margin-bottom: 18px; }
+  .remind-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; max-height: 46vh; overflow-y: auto; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+  .remind-item {
+    display: flex; align-items: center; gap: 14px; padding: 15px 16px; border-radius: 18px;
+    border: 2px solid #F3E6F5; cursor: pointer; transition: all .2s; font-size: 14px; font-weight: 600;
+  }
+  .remind-item .r-ic { font-size: 22px; }
+  .remind-item .r-freq { margin-left: auto; font-size: 11px; color: var(--ink-soft); font-weight: 500; }
+  .remind-item.on { border-color: var(--pink); background: #FFF0F6; }
+
+  /* ===== 我的页 ===== */
+  #page-mine { display: block; }
+  #page-mine > * { flex-shrink: 0; }
+  .mine-card {
+    margin: 16px 22px 0; border-radius: var(--radius); background: var(--card);
+    box-shadow: var(--shadow); padding: 18px 20px;
+  }
+  .mine-card h4 { font-size: 14px; margin-bottom: 4px; }
+  .mine-remind-list { display: flex; flex-direction: column; gap: 8px; max-height: 34vh; overflow-y: auto; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+  .mine-remind-item {
+    display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 14px;
+    background: #FDF8FC; border: 1.5px solid #F3E6F5; font-size: 13.5px; font-weight: 600;
+  }
+  .mine-remind-item .mr-ic { font-size: 18px; }
+  .mine-remind-item .mr-badge { margin-left: auto; font-size: 10px; color: #C9B8D6; font-weight: 500; }
+  .mine-remind-item .mr-del {
+    border: none; background: #FFF0F6; color: var(--pink); width: 26px; height: 26px;
+    border-radius: 9px; font-size: 13px; cursor: pointer; line-height: 1; flex-shrink: 0;
+  }
+  .mine-remind-item .mr-del:active { transform: scale(.9); }
+  .mine-remind-item.custom .mr-badge { color: var(--pink); }
+
+  /* ===== 爱心雨 ===== */
+  .heart-rain { position: absolute; inset: 0; pointer-events: none; z-index: 250; overflow: hidden; opacity: 0; transition: opacity .3s; }
+  .heart-rain.show { opacity: 1; }
+  .heart-rain .hr { position: absolute; font-size: 26px; animation: fall linear forwards; }
+  @keyframes fall { 0% { transform: translateY(-10%) rotate(0deg); opacity: 0;} 10% {opacity: 1;} 100% { transform: translateY(110vh) rotate(320deg); opacity: 0;} }
+
+  /* ===== 相册 · 纪念日页 ===== */
+  #page-album { display: block; background: linear-gradient(180deg, #EFE4FF 0%, var(--bg) 40%); }
+  #page-album > * { flex-shrink: 0; }
+  .album-head { padding: 64px 22px 6px; position: relative; }
+  .album-head h2 { font-size: 24px; }
+  .album-head p { color: var(--ink-soft); font-size: 13px; margin-top: 6px; }
+  .album-head .icon-btn { position: absolute; right: 22px; top: 62px; width: 38px; height: 38px; font-size: 16px; color: var(--pink); }
+  .anniv-list { display: flex; flex-direction: column; gap: 12px; padding: 18px 22px 0; }
+  .anniv-card {
+    background: #fff; border-radius: 20px; padding: 15px 18px; display: flex; align-items: center; gap: 14px;
+    box-shadow: 0 6px 16px rgba(140,90,210,.10); position: relative; overflow: hidden;
+  }
+  .anniv-card.done::after { content: "🎉"; position: absolute; right: 12px; bottom: -10px; font-size: 46px; opacity: .16; }
+  .anniv-card .a-ic {
+    width: 48px; height: 48px; border-radius: 16px; background: var(--grad-soft);
+    display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;
+  }
+  .anniv-card .a-info { flex: 1; min-width: 0; }
+  .anniv-card .a-info b { font-size: 14.5px; display: block; }
+  .anniv-card .a-info small { font-size: 11px; color: var(--ink-soft); }
+  .anniv-card .a-count { text-align: right; }
+  .anniv-card .a-num { font-size: 22px; font-weight: 900; color: var(--pink); line-height: 1.1; }
+  .anniv-card .a-num small { font-size: 11px; font-weight: 600; color: var(--ink-soft); }
+  .anniv-card.done .a-num { color: var(--mint); }
+  .anniv-card .a-label { font-size: 10.5px; color: var(--ink-soft); margin-top: 3px; }
+  .anniv-card.custom { cursor: pointer; }
+  .anniv-card.custom:active { transform: scale(.985); }
+  .anniv-input {
+    width: 100%; border: none; outline: none; background: #F6EEF8; border-radius: 999px;
+    padding: 13px 18px; font-size: 14px; margin-bottom: 12px; box-sizing: border-box;
+  }
+  input[type="date"].anniv-input { color: #6b5b7a; -webkit-appearance: none; }
+  .anniv-emoji-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .anniv-emoji-row .ae {
+    width: 40px; height: 40px; border-radius: 12px; background: #F6EEF8; font-size: 20px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid transparent;
+  }
+  .anniv-emoji-row .ae.on { border-color: var(--pink); background: #FFF0F5; }
+  .album-sec { display: flex; align-items: center; justify-content: space-between; padding: 26px 22px 12px; }
+  .album-sec h4 { font-size: 15px; }
+  .album-sec span { font-size: 12px; color: var(--ink-soft); }
+  .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0 22px 24px; }
+  .photo {
+    aspect-ratio: 1; border-radius: 16px; border: none; display: flex; align-items: center; justify-content: center;
+    font-size: 34px; cursor: pointer; box-shadow: 0 4px 10px rgba(140,90,210,.12); transition: transform .15s;
+  }
+  .photo:active { transform: scale(.92); }
+  .p-1 { background: linear-gradient(135deg,#FFD3E4,#FFE9F3);} .p-2 { background: linear-gradient(135deg,#E4DBFF,#F3ECFF);}
+  .p-3 { background: linear-gradient(135deg,#FFE8CC,#FFF3DF);} .p-4 { background: linear-gradient(135deg,#D2F7E8,#EAFBF3);}
+  .p-5 { background: linear-gradient(135deg,#FFD3EC,#FFE6F5);} .p-6 { background: linear-gradient(135deg,#D8ECFF,#ECF5FF);}
+  .p-7 { background: linear-gradient(135deg,#FFF3C9,#FFF8E1);} .p-8 { background: linear-gradient(135deg,#E9E0FF,#F5F0FF);}
+  .p-9 { background: linear-gradient(135deg,#FFDCD3,#FFEFE9);}
+
+  /* ===== 上传 & 头像 ===== */
+  .up { cursor: pointer; position: relative; }
+  .avatar.up { overflow: visible; }
+  .photo.img { background-size: cover !important; background-position: center !important; }
+  .photo.add-photo {
+    border: 2.5px dashed #D9C6E8; background: rgba(255,255,255,.6) !important;
+    font-size: 30px; color: #B9A8CB; box-shadow: none;
+  }
+
+  /* ===== 纪念日庆祝动画 ===== */
+  .celebrate {
+    position: absolute; inset: 0; z-index: 300; overflow: hidden;
+    background: linear-gradient(160deg, rgba(255,107,157,.94) 0%, rgba(179,136,255,.94) 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .5s ease;
+  }
+  .celebrate.show { opacity: 1; pointer-events: auto; }
+  .celebrate canvas { position: absolute; inset: 0; }
+  .celebrate .c-close { position: absolute; top: 20px; right: 24px; color: #fff; font-size: 26px; z-index: 3; cursor: pointer; }
+  .celebrate .c-big { font-size: 68px; animation: floaty 2.4s ease-in-out infinite; z-index: 2; filter: drop-shadow(0 10px 20px rgba(0,0,0,.2)); }
+  .celebrate h2 { color: #fff; font-size: 26px; margin-top: 14px; z-index: 2; text-shadow: 0 4px 16px rgba(0,0,0,.2); }
+  .celebrate p { color: rgba(255,255,255,.92); font-size: 14px; margin-top: 10px; z-index: 2; }
+
+  /* ===== 账号登录 ===== */
+  .login-err { font-size: 12.5px; color: #F43F7E; font-weight: 700; text-align: center; opacity: 0; max-height: 0; transition: all .25s ease; }
+  .login-err.show { opacity: 1; max-height: 30px; margin-bottom: 12px; }
+  .shake { animation: shakeX .45s ease; }
+  @keyframes shakeX { 0%,100%{transform:translateX(0);} 20%{transform:translateX(-8px);} 40%{transform:translateX(8px);} 60%{transform:translateX(-6px);} 80%{transform:translateX(6px);} }
+  .login-accounts { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+  .acc-chip {
+    flex: 1; min-width: 110px; display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+    border-radius: 14px; background: #F8F2FA; font-size: 12px; font-weight: 700; cursor: pointer;
+  }
+  .acc-chip .a-emoji { font-size: 18px; }
+  .acc-chip .a-name { flex: 1; min-width: 0; }
+  .acc-chip .a-txt { font-size: 10px; color: var(--ink-soft); font-weight: 500; display: block; }
+  .acc-chip .a-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .acc-chip.on .a-dot { background: var(--mint); box-shadow: 0 0 0 3px rgba(76,217,169,.2); }
+  .acc-chip.off .a-dot { background: #D9C6E8; }
+
+  /* 实时连接状态徽标（页面最上方居中） */
+  #rt-status {
+    position: fixed; top: calc(env(safe-area-inset-top, 0px) + 6px); left: 50%;
+    transform: translateX(-50%); z-index: 300;
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
+    border: 1px solid #E8DCF0; border-radius: 20px; padding: 5px 13px;
+    font-size: 11px; font-weight: 600; color: #8A7A9C; box-shadow: 0 4px 14px rgba(140,90,210,.14);
+    pointer-events: none; transition: all .3s;
+    max-width: 92%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  #rt-status .dot { width: 8px; height: 8px; border-radius: 50%; background: #C9B8D6; flex-shrink: 0; }
+  #rt-status.ok { color: #2BAE7F; border-color: #BFE8D8; }
+  #rt-status.ok .dot { background: #2BAE7F; box-shadow: 0 0 0 3px rgba(43,174,127,.18); }
+  #rt-status.fail { color: #E08989; border-color: #F5CFCF; }
+  #rt-status.fail .dot { background: #E08989; }
+  /* 滚动时自动淡出，避免悬浮遮挡纪念日/心情等卡片；回到页面顶部自动恢复 */
+  #rt-status.scrolled { opacity: 0; transform: translate(-50%, -10px); pointer-events: none; }
+
+  /* 今日互动：固定高度 + 卡片内滑动查看，不挤压其他组件 */
+  .today-card { margin: 16px 22px 24px; border-radius: var(--radius); background: var(--card); box-shadow: var(--shadow); padding: 18px 20px; }
+  .today-card h4 { font-size: 14px; margin-bottom: 12px; }
+  .today-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .today-head h4 { margin: 0; }
+  .today-clear {
+    border: none; background: #FFF0F6; color: var(--pink); font-size: 11.5px; font-weight: 500;
+    padding: 5px 13px; border-radius: 999px; cursor: pointer; flex-shrink: 0;
+  }
+  .today-clear:active { transform: scale(.95); }
+  #today-list {
+    max-height: 240px; overflow-y: auto; overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch; scrollbar-width: thin;
+  }
+  #today-list::-webkit-scrollbar { width: 4px; }
+  #today-list::-webkit-scrollbar-thumb { background: #E4D3EF; border-radius: 4px; }
+
+  @media (max-width: 900px) {
+    .intro { display: none; }
+  }
+  @media (max-width: 480px) {
+    body { padding: 8px; }
+    .phone { width: 100%; max-width: 400px; height: 760px; border-radius: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<input type="file" id="file-input" accept="image/*" style="position:absolute;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none" onchange="onFileChosen(event)">
+<!-- 头像上传：用 label 原生关联 input，浏览器原生调起选择器，不依赖 JS .click()，兼容所有移动端 WebView 内核 -->
+<input type="file" id="avatar-input-ta" accept="image/*" style="position:absolute;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none" onchange="onAvatarChosen('ta', event)">
+<input type="file" id="avatar-input-me" accept="image/*" style="position:absolute;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none" onchange="onAvatarChosen('me', event)">
+
+<div class="intro">
+  <h1>树与璇 <span class="grad">Shu &amp; Xuan</span></h1>
+  <p>树树 &amp; 璇璇 的专属小屋：登录绑定彼此 → 随时让对方知道你的心情 → 一键提醒 TA 想你了 / 该休息了 → 纪念日倒数 + 甜蜜相册。这是「树与璇」App 的交互原型，点击屏幕上的按钮即可体验完整流程。</p>
+  <div class="tips">
+    <span>💗 登录体验</span><span>🎭 对方心情可见</span><span>🔔 一键提醒</span><span>✨ 创意动画</span>
+  </div>
+</div>
+
+<div class="phone">
+  <div class="screen">
+
+    <!-- ========== 登录页 ========== -->
+    <div class="page active" id="page-login">
+      <div class="login-heart" style="margin-top:40px;">
+        <div class="logo">💘</div>
+        <h1>树 与 璇</h1>
+        <p>树树 &amp; 璇璇 · 心动小屋</p>
+      </div>
+      <div class="login-card">
+        <div class="login-err" id="login-err"></div>
+        <div class="field"><span class="ic">👤</span><input id="login-user" type="text" placeholder="账号（生日数字）" autocomplete="username"></div>
+        <div class="field"><span class="ic">🔒</span><input id="login-pass" type="password" placeholder="密码" autocomplete="current-password"></div>
+        <button class="btn-main" onclick="doLogin()">💞 进入树璇小屋</button>
+        <div class="login-accounts" id="login-accounts"></div>
+      </div>
+      <div class="ver-tag">v46</div>
+      <div style="height:40px;"></div>
+    </div>
+
+    <!-- ========== 首页 ========== -->
+    <div class="page" id="page-home">
+      <div class="home-head">
+        <div class="names">
+          <label class="avatar ta up" id="avatar-ta-home" for="avatar-input-ta">🌳<span class="ring"></span></label>
+          <div>
+            <div class="who" id="home-peer-name">树宝 <span style="font-size:11px;color:#B9A8CB;">💞 已绑定</span></div>
+            <div class="sub" id="home-peer-status">对方心情：在想你</div>
+          </div>
+        </div>
+        <label class="avatar me up" id="avatar-me-home" for="avatar-input-me">💎</label>
+      </div>
+
+      <div class="days-card" onclick="openDatesSheet()">
+        <div>
+          <div class="d-num" id="d-num">3109 <span style="font-size:16px;font-weight:600;">天</span></div>
+          <div class="d-label" id="d-label">💍 在一起第 3109 天 · 始于 2018.01.30</div>
+        </div>
+        <div class="d-next" id="d-next">下一个纪念日<br>🎂 树宝生日 · 111 天后</div>
+        <div class="days-edit-hint">✎ 点击编辑日期</div>
+      </div>
+
+      <div class="mood-card" id="ta-mood-card">
+        <div class="m-head"><span class="dot"></span> <span id="mood-peer-label">树宝</span>的实时心情</div>
+        <div class="m-body">
+          <div class="mood-emoji" id="ta-emoji">🥰</div>
+          <div class="m-txt">
+            <h3 id="ta-mood-title">在想你</h3>
+            <p id="ta-mood-desc">一整天都在想你，看到云朵都像你～</p>
+            <div class="time" id="ta-mood-time">⏰ 2 分钟前更新</div>
+          </div>
+        </div>
+        <div class="m-actions">
+          <button class="btn-main" onclick="heartRain(true)">💘 回应 TA</button>
+          <button class="btn-ghost" onclick="openSheet()">🔔 提醒 TA</button>
+        </div>
+      </div>
+
+      <div class="quick-note">🎈 一键提醒对方 <span class="hint">左右滑动 · 共 <b id="quick-count">11</b> 个</span></div>
+      <div class="quick-scroll" id="quick-scroll"></div>
+
+      <div class="today-card">
+        <div class="today-head">
+          <h4>📖 今日互动</h4>
+          <button class="today-clear" onclick="clearToday()">清空</button>
+        </div>
+        <div id="today-list"></div>
+      </div>
+      <div class="ver-tag">v46</div>
+      <div style="height:100px;"></div>
+    </div>
+
+    <!-- ========== 聊天页 ========== -->
+    <div class="page" id="page-chat">
+      <div class="chat-head">
+        <label class="avatar ta up" id="avatar-ta-chat" for="avatar-input-ta">🌳</label>
+        <div class="who"><b id="chat-peer-name">树宝</b><small id="chat-peer-status">● 在线 · 正在想你</small></div>
+        <button class="bell chat-clear" onclick="clearChat()" title="清空聊天记录">🗑️</button>
+        <button class="bell" onclick="openSheet()">🔔</button>
+      </div>
+      <div class="chat-body">
+        <div class="chat-date">今天 10:24</div>
+        <div class="bubble ta">在干嘛呀，想你了 🥺</div>
+        <div class="bubble me">我也想你！刚做完图，马上陪你 🥰</div>
+        <div class="bubble ta">你上次说想去看海，这周末去好不好？🏖️</div>
+        <div class="bubble me">真的吗！那我订酒店！💃</div>
+        <div class="bubble ta">我设置了心情「在想你」，你看到啦吗 😳</div>
+        <div class="bubble me">看到啦！我也要设一个 💕</div>
+        <div class="typing"><i></i><i></i><i></i></div>
+      </div>
+      <div class="chat-input">
+        <input id="chat-text" type="text" placeholder="说点什么甜甜的话…" onkeydown="if(event.key==='Enter')sendMsg()">
+        <button class="remind" onclick="openSheet()" title="提醒TA">🔔</button>
+        <button class="send" onclick="sendMsg()">➤</button>
+      </div>
+    </div>
+
+    <!-- ========== 心情页 ========== -->
+    <div class="page" id="page-mood">
+      <div class="mood-head">
+        <h2>此刻的心情</h2>
+        <p>选择一个心情，对方就能实时看到 💫</p>
+      </div>
+      <div class="mood-mine empty" id="mood-mine">
+        <div class="mm-emoji" id="mm-emoji">😶</div>
+        <div class="mm-info">
+          <b id="mm-title">我还没设置心情</b>
+          <small id="mm-desc">选一个心情，对方就能实时看到 💫</small>
+          <small class="mm-time" id="mm-time"></small>
+        </div>
+        <button class="mm-clear" onclick="clearMyMood()">✕ 清除</button>
+      </div>
+      <div class="mood-grid" id="mood-grid"></div>
+      <div class="mood-preview">
+        <span class="pv-emoji" id="pv-emoji">🥰</span>
+        <div style="flex:1;"><b id="pv-title">在想你</b><div style="color:var(--ink-soft);font-size:12px;margin-top:2px;" id="pv-desc">看到云朵都像你～</div></div>
+        <button class="btn-main" style="width:auto;padding:11px 20px;font-size:13px;border-radius:14px;" onclick="saveMood()">💾 同步心情</button>
+      </div>
+      <div class="mood-save" style="height:90px;"></div>
+    </div>
+
+    <!-- ========== 相册 · 纪念日倒数 ========== -->
+    <div class="page" id="page-album">
+      <div class="album-head">
+        <h2>📅 纪念日</h2>
+        <p>重要的日子，都帮你记着 ⏳</p>
+        <button class="icon-btn" onclick="openAnnivSheet()">＋</button>
+      </div>
+      <div class="anniv-list" id="anniv-list">
+        <div class="anniv-card done">
+          <div class="a-ic">💍</div>
+          <div class="a-info"><b>在一起的日子</b><small>2018-01-30 · 那天我们在一起</small></div>
+          <div class="a-count"><div class="a-num">3109<small> 天</small></div><div class="a-label">✅ 已达成 · 8 年又 187 天</div></div>
+        </div>
+        <div class="anniv-card">
+          <div class="a-ic">💖</div>
+          <div class="a-info"><b>在一起 3110 天</b><small>明天 2026-08-06 · 小确幸</small></div>
+          <div class="a-count"><div class="a-num">1<small> 天</small></div><div class="a-label">⏳ 倒数中</div></div>
+        </div>
+        <div class="anniv-card">
+          <div class="a-ic">🎂</div>
+          <div class="a-info"><b>璇宝的生日</b><small>2026-11-14 · 周六 · 26 岁</small></div>
+          <div class="a-count"><div class="a-num">101<small> 天</small></div><div class="a-label">⏳ 倒数中</div></div>
+        </div>
+        <div class="anniv-card">
+          <div class="a-ic">🎂</div>
+          <div class="a-info"><b>树宝的生日</b><small>2026-11-24 · 周二 · 25 岁</small></div>
+          <div class="a-count"><div class="a-num">111<small> 天</small></div><div class="a-label">⏳ 倒数中</div></div>
+        </div>
+        <div class="anniv-card">
+          <div class="a-ic">🏆</div>
+          <div class="a-info"><b>在一起 9 周年</b><small>2027-01-30 · 九年如一</small></div>
+          <div class="a-count"><div class="a-num">178<small> 天</small></div><div class="a-label">⏳ 倒数中</div></div>
+        </div>
+      </div>
+      <div class="album-sec"><h4>📷 我们的相册</h4><span>点击格子上传照片 · 共 <b id="photo-count">0</b> 张</span></div>
+      <div class="photo-grid" id="photo-grid"></div>
+      <div style="height:100px;"></div>
+    </div>
+
+    <!-- ========== 我的页 ========== -->
+    <div class="page" id="page-mine">
+      <div class="mood-head">
+        <h2>👥 我的</h2>
+        <p>账号与专属提醒设置</p>
+      </div>
+      <div class="mine-card">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="avatar me" id="avatar-mine-me" style="width:54px;height:54px;font-size:26px;"></div>
+          <div style="flex:1;">
+            <b id="mine-name" style="font-size:16px;"></b>
+            <div style="font-size:12px;color:var(--ink-soft);margin-top:3px;" id="mine-peer"></div>
+          </div>
+          <button class="icon-btn" onclick="openAcc()" title="账号设置">⚙️</button>
+        </div>
+      </div>
+      <div class="mine-card">
+        <h4>🔔 自定义提醒 <span style="font-size:11px;color:var(--ink-soft);font-weight:500;">新增后自动同步到对方</span></h4>
+        <div style="display:flex;gap:8px;margin:12px 0 4px;">
+          <input id="custom-remind-input" type="text" maxlength="12" placeholder="如：下雨记得带伞 ☔"
+            style="flex:1;min-width:0;border:2px solid #F3E6F5;border-radius:14px;padding:11px 13px;font-size:14px;outline:none;background:#FDF8FC;color:var(--ink);"
+            onkeydown="if(event.key==='Enter')addCustomRemind()">
+          <button class="btn-main" style="width:auto;padding:0 18px;font-size:14px;border-radius:14px;flex-shrink:0;" onclick="addCustomRemind()">➕ 添加</button>
+        </div>
+        <p style="font-size:11.5px;color:#C9B8D6;margin:2px 0 10px;">双方账号都会同步这份自定义提醒列表（内置 11 个 + 自定义 N 个）</p>
+        <div class="mine-remind-list" id="mine-remind-list"></div>
+      </div>
+      <div class="mine-card">
+        <h4>🌈 自定义心情 <span style="font-size:11px;color:var(--ink-soft);font-weight:500;">新增后自动同步到对方</span></h4>
+        <div style="display:flex;gap:8px;margin:12px 0 4px;">
+          <select id="custom-mood-emoji" title="选一个表情"
+            style="border:2px solid #F3E6F5;border-radius:14px;padding:9px 6px;font-size:17px;outline:none;background:#FDF8FC;width:56px;flex-shrink:0;">
+            <option>🥰</option><option>😤</option><option>🥺</option><option>🤩</option><option>😴</option>
+            <option>🤗</option><option>😊</option><option>😘</option><option>🥳</option><option>😭</option>
+            <option>💕</option><option>🌙</option><option>☕</option><option>🍰</option>
+          </select>
+          <input id="custom-mood-input" type="text" maxlength="8" placeholder="心情名，如：好想你"
+            style="flex:1;min-width:0;border:2px solid #F3E6F5;border-radius:14px;padding:11px 13px;font-size:14px;outline:none;background:#FDF8FC;color:var(--ink);"
+            onkeydown="if(event.key==='Enter')addCustomMood()">
+          <button class="btn-main" style="width:auto;padding:0 16px;font-size:14px;border-radius:14px;flex-shrink:0;" onclick="addCustomMood()">➕ 添加</button>
+        </div>
+        <p style="font-size:11.5px;color:#C9B8D6;margin:2px 0 10px;">双方账号都会同步这份自定义心情（内置 6 个 + 自定义 N 个）</p>
+        <div class="mine-remind-list" id="mine-mood-list"></div>
+      </div>
+      <div style="height:110px;"></div>
+    </div>
+
+    <!-- ===== 实时通道状态徽标（登录后显示） ===== -->
+    <div id="rt-status" class="rt-badge" style="display:none;">
+      <span class="dot"></span><span id="rt-status-text">实时通道连接中…</span>
+    </div>
+
+    <!-- ===== 底部 Tab（登录后显示） ===== -->
+    <div class="tabbar" id="tabbar" style="opacity:0;pointer-events:none;transition:opacity .4s;">
+      <button class="tab-btn on" data-tab="home" onclick="goTab('home')"><span class="t-ic">🏠</span>首页</button>
+      <button class="tab-btn" data-tab="chat" onclick="goTab('chat')"><span class="t-ic">💬</span>聊天</button>
+      <button class="tab-btn" data-tab="album" onclick="goTab('album')"><span class="t-ic">📷</span>相册</button>
+      <button class="tab-btn" data-tab="mood" onclick="goTab('mood')"><span class="t-ic">🌈</span>心情</button>
+      <button class="tab-btn" data-tab="mine" onclick="goTab('mine')"><span class="t-ic">👥</span>我的</button>
+    </div>
+
+    <!-- ===== 提醒弹窗 ===== -->
+    <div class="overlay" id="sheet-overlay" onclick="closeSheet(event)">
+      <div class="sheet" onclick="event.stopPropagation()">
+        <div class="grab"></div>
+        <h3 id="remind-title">🔔 提醒树宝</h3>
+        <p class="sub">选择一个提醒，TA 会收到一条可爱通知</p>
+        <div class="remind-list" id="remind-list"></div>
+        <button class="btn-main" onclick="sendRemind()">🔔 发送提醒</button>
+      </div>
+    </div>
+
+    <!-- 账号设置 -->
+    <div class="overlay" id="acc-overlay" onclick="closeAccSheet(event)">
+      <div class="sheet" onclick="event.stopPropagation()">
+        <div class="grab"></div>
+        <h3>⚙️ 我的账号</h3>
+        <p class="sub" id="acc-info">当前登录</p>
+        <div style="background:#F8F2FA;border-radius:18px;padding:16px;font-size:13px;line-height:2;margin-bottom:20px;">
+          <div id="acc-me"></div>
+          <div id="acc-peer"></div>
+        </div>
+        <div class="ver-tag">v46</div>
+        <button class="btn-ghost" style="margin-bottom:10px;" onclick="logout()">🚪 退出登录</button>
+        <button class="btn-main" onclick="closeAccSheet(event)">继续使用</button>
+      </div>
+    </div>
+
+    <!-- 设置恋爱开始日期 & 生日 -->
+    <div class="overlay" id="dates-overlay" onclick="closeDatesSheet(event)">
+      <div class="sheet" onclick="event.stopPropagation()">
+        <div class="grab"></div>
+        <h3>📅 设置纪念日起始日期</h3>
+        <p class="sub">每对情侣独立设置，修改后自动更新倒数信息</p>
+        <div class="field"><span class="ic">💍</span><input type="date" id="dates-start" class="anniv-input" placeholder="恋爱开始日期"></div>
+        <div class="field"><span class="ic">🎂</span><input type="date" id="dates-birth-ta" class="anniv-input" placeholder="TA 的生日"></div>
+        <div class="field"><span class="ic">🎂</span><input type="date" id="dates-birth-me" class="anniv-input" placeholder="我的生日"></div>
+        <button class="btn-main" onclick="saveDates()">✅ 保存设置</button>
+      </div>
+    </div>
+
+    <!-- 添加纪念日 -->
+    <div class="overlay" id="anniv-overlay" onclick="closeAnnivSheet(event)">
+      <div class="sheet" onclick="event.stopPropagation()">
+        <div class="grab"></div>
+        <h3 id="anniv-title">🌸 添加纪念日</h3>
+        <p class="sub" id="anniv-sub">记下一个重要的日子，双方都会同步看到</p>
+        <input class="anniv-input" id="anniv-name" placeholder="名称，如：初吻纪念日" maxlength="20">
+        <div class="anniv-emoji-row" id="anniv-emoji-row">
+          <span class="ae" onclick="pickAnnivEmoji(this)">💖</span>
+          <span class="ae" onclick="pickAnnivEmoji(this)">💍</span>
+          <span class="ae" onclick="pickAnnivEmoji(this)">🎂</span>
+          <span class="ae" onclick="pickAnnivEmoji(this)">🏆</span>
+          <span class="ae" onclick="pickAnnivEmoji(this)">🌹</span>
+          <span class="ae" onclick="pickAnnivEmoji(this)">✈️</span>
+          <span class="ae" onclick="pickAnnivEmoji(this)">🎉</span>
+          <span class="ae" onclick="pickAnnivEmoji(this)">🐾</span>
+        </div>
+        <input type="date" class="anniv-input" id="anniv-date">
+        <button class="btn-main" id="anniv-save-btn" onclick="saveAnniv()">✅ 添加并同步</button>
+      </div>
+    </div>
+
+    <!-- 自定义纪念日详情 -->
+    <div class="overlay" id="anniv-detail-overlay" onclick="closeAnnivDetail(event)">
+      <div class="sheet" onclick="event.stopPropagation()">
+        <div class="grab"></div>
+        <div class="ad-icon" id="ad-ic">💖</div>
+        <h3 id="ad-name" style="text-align:center;">纪念日</h3>
+        <p class="sub" id="ad-date" style="text-align:center;">每年 · 倒计时</p>
+        <div class="ad-row">
+          <button class="btn-ghost" onclick="editCustomAnnivFromDetail()">✏️ 编辑</button>
+          <button class="btn-danger" onclick="delCustomAnnivFromDetail()">🗑 删除</button>
+        </div>
+        <button class="btn-main" style="margin-top:10px;" onclick="closeAnnivDetail()">完成</button>
+      </div>
+    </div>
+
+    <!-- 纪念日庆祝动画 -->
+    <div class="celebrate" id="celebrate" onclick="this.classList.remove('show')">
+      <canvas id="fx-canvas"></canvas>
+      <div class="c-close">✕</div>
+      <div class="c-big" id="c-big">🎉</div>
+      <h2 id="c-title">在一起 3200 天！</h2>
+      <p id="c-sub">每个瞬间都值得纪念</p>
+    </div>
+
+    <!-- 爱心雨 -->
+    <div class="heart-rain" id="heart-rain"></div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+  </div>
+</div>
+
+<script src="lib/mqtt.min.js"></script>
+<script>
+  let loggedIn = false;
+  let currentUser = null;
+  let currentPairId = '';   // 当前登录的对ID，'' 为默认对（树宝/璇宝），非空为其他对
+  // 所有情侣对的预设账号（对ID → 角色 → 账号信息）
+  // pairId='' 为默认对（兼容旧数据），新对用 'p1','p2'... 
+  const ALL_PAIRS = {
+    '': { ta: { user: '20011124', pass: '1114', name: '树宝', emoji: '🌳' },
+          me: { user: '20001114', pass: '1124', name: '璇宝', emoji: '💎' } },
+    'p1':{ ta: { user: 'USER1', pass: '123', name: '用户1', emoji: '🐱' },
+           me: { user: 'USER2', pass: '123', name: '用户2', emoji: '🐶' } }
+  };
+  // ACCOUNTS 动态重建为当前对的两个角色
+  let ACCOUNTS = {};
+  function rebuildAccounts(pairId) {
+    const p = ALL_PAIRS[pairId] || ALL_PAIRS[''];
+    ACCOUNTS.ta = p.ta; ACCOUNTS.me = p.me;
+  }
+  const peerOf = w => (w === 'ta' ? 'me' : 'ta');
+  const APP_VERSION = 'v46';   // 当前运行版本，升级时同步修改（与 sw.js 的 CACHE 一致）
+  // 把版本号渲染到界面所有 .ver-tag 元素（登录页/首页/账号面板），方便确认是否为最新版
+  function renderVersion() {
+    const tags = document.querySelectorAll('.ver-tag');
+    for (const t of tags) t.textContent = APP_VERSION;
+  }
+
+  /* ===== 真·双人实时连接（MQTT 服务器中转，无 NAT 打洞问题） ===== */
+  // 两台手机都连同一个公共消息服务器，通过主题互发；在线状态用 retain + will 自动广播
+  const RT = { client: null, started: false, sim: false, onlineAt: 0, peerOnline: false, lastSeen: 0, heart: null, _toasted: false };
+  const MQTT_URLS = [
+    'wss://test.mosquitto.org:8081/mqtt',
+    'wss://broker.emqx.io:8084/mqtt',
+    'wss://broker.hivemq.com:8884/mqtt'
+  ];
+  const TOPIC_D = w => 'shuxuan/' + (currentPairId ? currentPairId + '/' : '') + 'data/' + w;   // 数据通道：发给 w
+  const TOPIC_O = w => 'shuxuan/' + (currentPairId ? currentPairId + '/' : '') + 'online/' + w;   // 在线状态：w 的状态
+  function rtPeerId(who) { return who; }        // 兼容旧引用
+  function rtOnline() {
+    return RT.peerOnline === true && (Date.now() - RT.onlineAt < 35000);
+  }
+  function rtSend(data) {
+    if (!RT.client || !RT.client.connected || !currentUser) return false;
+    try { RT.client.publish(TOPIC_D(peerOf(currentUser)), JSON.stringify(data)); return true; } catch (e) { return false; }
+  }
+  function textDecode(b) {
+    try {
+      if (typeof b === 'string') return b;
+      if (b instanceof ArrayBuffer) return new TextDecoder().decode(b);
+      if (b && typeof b.length === 'number') return new TextDecoder().decode(b); // Uint8Array/Buffer
+      return String(b);
+    } catch (e) { return String(b); }
+  }
+  function rtStart() {
+    if (RT.started) return;
+    RT.started = true;
+    if (typeof mqtt === 'undefined') { RT.sim = true; toast('📶 实时通道未加载，已切换单机演示模式'); return; }
+    const who = currentUser;
+    const cid = 'shuxuan-' + (currentPairId || 'p0') + '-' + who + '-' + Math.random().toString(36).slice(2, 8);
+    // 固定使用同一台服务器（mosquitto，已实测连通）。两台手机必须连同一台才能互通，
+    // 因此绝不切换服务器：断线由 reconnectPeriod 自动重连同一台，保证永不分离。
+    const url = MQTT_URLS[0];
+    let c;
+    try {
+      c = mqtt.connect(url, {
+        clientId: cid, keepalive: 30, clean: true,
+        reconnectPeriod: 3000, connectTimeout: 12000,
+        will: { topic: TOPIC_O(who), payload: JSON.stringify({ on: false, at: Date.now() }), retain: true }
+      });
+    } catch (e) { RT.sim = true; toast('📶 实时通道启动失败，已切换单机演示模式'); return; }
+    c.on('connect', () => {
+      RT.client = c;
+      RT.sim = false;
+      try {
+        c.subscribe(TOPIC_O(peerOf(who)), { qos: 1 });   // 订阅对方在线状态
+        c.subscribe(TOPIC_D(who), { qos: 1 });           // 订阅对方发给我的数据
+        c.publish(TOPIC_O(who), JSON.stringify({ on: true, at: Date.now() }), { qos: 1, retain: true });
+        c.publish(TOPIC_D(peerOf(who)), JSON.stringify({ t: 'hello' }), { qos: 1 });
+      } catch (e) {}
+      updatePeerStatus();
+      updateRtBadge('ok');
+      if (RT._toasted === undefined) RT._toasted = 0;
+      RT._toasted++;
+      toast(RT._toasted <= 1 ? '📶 实时已连接，与' + peerName() + '互联中' : '📶 实时已自动重连');
+    });
+    c.on('message', (topic, payloadBuf) => {
+      try {
+        const d = JSON.parse(textDecode(payloadBuf));
+        if (topic === TOPIC_O(peerOf(who))) {
+          const wasOn = RT.peerOnline;
+          RT.peerOnline = !!d.on;
+          RT.onlineAt = d.at || Date.now();
+          if (!wasOn && RT.peerOnline && currentUser) toast('💞 ' + peerName() + ' 上线啦，实时相连中！');
+          updatePeerStatus();
+        } else {
+          rtOnData(d);
+        }
+      } catch (e) {}
+    });
+    c.on('close', () => { RT.peerOnline = false; RT.onlineAt = 0; updatePeerStatus(); updateRtBadge('fail'); });
+    // 连接失败或断开：交给 reconnectPeriod 自动重连同一台服务器，绝不手动切换服务器
+    c.on('error', () => { updateRtBadge('fail'); });
+    // 心跳：15s 宣告一次在线，让对方的 35s 窗口保持新鲜
+    RT.heart = setInterval(() => {
+      if (RT.client && RT.client.connected) {
+        try { RT.client.publish(TOPIC_O(who), JSON.stringify({ on: true, at: Date.now() }), { qos: 1, retain: true }); } catch (e) {}
+      }
+    }, 15000);
+  }
+  function rtStop() {
+    if (!RT.started) return;
+    RT.started = false;
+    clearInterval(RT.heart);
+    if (RT.client) {
+      try { RT.client.publish(TOPIC_O(currentUser || 'ta'), JSON.stringify({ on: false, at: Date.now() }), { retain: true }); } catch (e) {}
+      try { RT.client.end(true); } catch (e) {}
+    }
+    RT.client = null; RT.peerOnline = false; RT.onlineAt = 0;
+    updateRtBadge('off');
+  }
+  /* 实时通道状态徽标：ok=已连接 / fail=断开重连中 / off=未启动 */
+  function updateRtBadge(state) {
+    const el = document.getElementById('rt-status');
+    const tx = document.getElementById('rt-status-text');
+    if (!el || !tx) return;
+    if (!currentUser) { el.style.display = 'none'; return; }
+    if (state === 'ok') {
+      el.className = 'rt-badge ok';
+      tx.textContent = '实时已连接 · 与' + peerName() + '互联';
+      el.style.display = 'flex';
+    } else if (state === 'fail') {
+      el.className = 'rt-badge fail';
+      tx.textContent = '实时断开，重连中…';
+      el.style.display = 'flex';
+    } else {
+      el.style.display = 'none';
+    }
+  }
+  function rtOnData(d) {
+    if (!d || typeof d !== 'object') return;
+    RT.lastSeen = Date.now();
+    if (!currentUser) return;
+    const peer = peerName();
+    switch (d.t) {
+      case 'ping': case 'hello':
+        // 对方刚上线：把手头全部照片 + 我的当下头像 + 我的当下心情 + 纪念日日期同步过去，确保双方一致
+        if (d.t === 'hello') {
+          syncPhotosToPeer();
+          syncAvatarToPeer();
+          syncMoodToPeer();
+          syncDatesToPeer();
+        }
+        break;
+      case 'mood':
+        saveStore('peer_mood', d.emoji + '|' + d.title + '|' + d.desc + '|' + Date.now());
+        renderPeerMood('刚刚实时更新');
+        updatePeerStatus();
+        if (!d.silent) {   // silent 补齐同步：仅更新存储与界面，不弹提示/气泡/震动，避免打扰
+          addActivity('🌈', peer + '的心情更新为：' + d.title, d.emoji + ' ' + d.desc);
+          addChatBubble('ta', '🌈 设置了心情「' + escapeHtml(d.title) + '」 ' + d.emoji, 'mood');
+          if (navigator.vibrate) navigator.vibrate(60);
+          toast(peer + '的心情：「' + d.title + '」' + d.emoji);
+        }
+        break;
+      case 'remind':
+        if (navigator.vibrate) navigator.vibrate([120, 60, 120]);
+        addActivity(d.ic || '🔔', peer + '提醒你：' + d.text, '记得做哦');
+        addChatBubble('ta', (d.ic || '🔔') + ' 提醒你：' + escapeHtml(d.text), 'remind');
+        toast('🔔 ' + peer + '提醒你：' + d.text + ' 💌');
+        break;
+      case 'remind_sync':
+        if (d.custom && Array.isArray(d.custom)) {
+          saveCustomReminds(d.custom);
+          renderReminds();
+          renderMine();
+          toast('🔁 ' + peer + ' 更新了自定义提醒，已同步');
+        }
+        break;
+      case 'celebrate':
+        heartRain();   // 对方回应了我的实时心情 → 我这边也弹爱心雨庆祝
+        addActivity('💘', peer + '回应了你的实时心情', '爱心雨来啦 💕');
+        addChatBubble('ta', '💘 ' + peer + '回应了你：想你啦！', 'celebrate');
+        if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
+        toast('💘 ' + peer + '回应了你！爱心雨送达 🥰');
+        break;
+      case 'mood_sync':
+        if (d.custom && Array.isArray(d.custom)) {
+          saveCustomMoods(d.custom);
+          renderMoodGrid();
+          renderMineMoods();
+          toast('🔁 ' + peer + ' 更新了自定义心情，已同步');
+        }
+        break;
+      case 'anniv_sync':
+        if (d.custom && Array.isArray(d.custom)) {
+          saveCustomAnniv(d.custom);
+          renderAnniv();
+          toast('🔁 ' + peer + ' 更新了纪念日，已同步');
+        }
+        break;
+      case 'anniv_dates':
+        savePairDates(d.dating || '', d.birth_ta || null, d.birth_me || null, true);
+        checkCelebration();
+        if (!d.silent) toast('🔁 ' + peer + ' 更新了纪念日起始日期，已同步');
+        break;
+      case 'chat':
+        addChatBubble('ta', escapeHtml(d.text), 'chat');
+        addActivity('💌', peer + '给你发了消息', '“' + String(d.text).slice(0, 20) + (String(d.text).length > 20 ? '…' : '') + '”');
+        if (navigator.vibrate) navigator.vibrate(80);
+        toast(peer + '：' + d.text);
+        break;
+      case 'avatar':
+        if (d.url) {
+          saveStore('avatar_' + peerOf(currentUser), d.url);
+          applyIdentity();
+          // silent=true 表示"全量补齐同步"，静默覆盖不打扰；仅主动换头像时才有提示
+          if (!d.silent) toast('💞 ' + peer + ' 换头像啦');
+        }
+        break;
+      case 'photo':
+        if (d.url) {
+          saveStore('photo_' + d.idx, d.url);
+          renderPhotos();
+          // silent=true 表示"全量补齐同步"，静默覆盖不打扰；仅上传单张时才有提示
+          if (!d.silent) {
+            addActivity('📷', peer + '更新了相册照片', '第 ' + (parseInt(d.idx, 10) + 1) + ' 张');
+            addChatBubble('ta', '📷 ' + peer + '更新了相册照片', 'photo');
+            if (navigator.vibrate) navigator.vibrate(50);
+            toast('📷 ' + peer + '上传了新照片，相册已同步');
+          }
+        }
+        break;
+    }
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+  function timeNow() {
+    const d = new Date();
+    return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  }
+
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelector('.page.active').scrollTop = 0;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  /* ===== 账号登录 ===== */
+  function doLogin() {
+    if (loggedIn) return;
+    const u = document.getElementById('login-user').value.trim();
+    const p = document.getElementById('login-pass').value.trim();
+    // 遍历所有对的所有账号匹配
+    for (const [pid, pair] of Object.entries(ALL_PAIRS)) {
+      const hit = Object.keys(pair).find(w => pair[w].user === u && pair[w].pass === p);
+      if (hit) { loginAs(hit, pid); return; }
+    }
+    showLoginError();
+  }
+  function showLoginError() {
+    const err = document.getElementById('login-err');
+    err.textContent = '⚠️ 账号或密码不对哦，再试试～';
+    err.classList.add('show');
+    const card = document.querySelector('.login-card');
+    card.classList.remove('shake');
+    void card.offsetWidth;
+    card.classList.add('shake');
+    toast('验证不通过，无法进入 💔');
+  }
+  function loginAs(who, pairId, silent) {
+    currentUser = who;
+    currentPairId = pairId || '';
+    rebuildAccounts(currentPairId);
+    saveStore('session_user', currentPairId + ':' + who);
+    setOnline(who, true);
+    loggedIn = true;
+    applyIdentity();
+    renderChatHistory();
+    renderAnniv();
+    renderPhotos();
+    renderActivities();
+    renderMoodGrid();
+    renderMineMoods();
+    renderReminds();
+    renderMine();
+    renderLoginAccounts();
+    checkCelebration();
+    if (!silent) {
+      heartRain();
+      toast('欢迎回来，' + ACCOUNTS[who].name + ' 💞');
+    }
+    showPage('page-home');
+    document.getElementById('tabbar').style.opacity = 1;
+    document.getElementById('tabbar').style.pointerEvents = 'auto';
+    updateRtBadge('fail');  // 先显示"连接中"，rtStart 连上后自动转 ok
+    rtStart();   // 建立实时连接，对方在线则立刻互联
+  }
+  function logout() {
+    if (!currentUser) return;
+    setOnline(currentUser, false);
+    saveStore('session_user', '');
+    loggedIn = false;
+    currentUser = null;
+    currentPairId = '';
+    rtStop();
+    document.getElementById('acc-overlay').classList.remove('show');
+    document.getElementById('tabbar').style.opacity = 0;
+    document.getElementById('tabbar').style.pointerEvents = 'none';
+    renderLoginAccounts();
+    showPage('page-login');
+    toast('已退出登录，下次见 👋');
+  }
+  function setOnline(who, on) { saveStore('online_' + (currentPairId ? currentPairId + '_' : '') + who, on ? '1' : '0'); }
+  function isOnline(who, pairId) {
+    // 实时连接优先；自己永远在线；未登录时回退到存储值（登录页展示）
+    const pid = pairId !== undefined ? pairId : currentPairId;
+    if (currentUser && pid === currentPairId && who === peerOf(currentUser)) return rtOnline();
+    if (currentUser && pid === currentPairId && who === currentUser) return true;
+    return getStore('online_' + (pid ? pid + '_' : '') + who) === '1';
+  }
+
+  function peerName() {
+    return currentUser ? ACCOUNTS[peerOf(currentUser)].name : '树宝';
+  }
+  function applyIdentity() {
+    if (!currentUser) return;
+    const cur = ACCOUNTS[currentUser];
+    const peer = ACCOUNTS[peerOf(currentUser)];
+    document.getElementById('home-peer-name').innerHTML = peer.name + ' <span style="font-size:11px;color:#B9A8CB;">💞 已绑定</span>';
+    document.getElementById('chat-peer-name').textContent = peer.name;
+    document.getElementById('mood-peer-label').textContent = peer.name;
+    document.getElementById('remind-title').textContent = '🔔 提醒 ' + peer.name;
+    ['today-msg1', 'today-msg2', 'today-msg3'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = peer.name;
+    });
+    paintAvatar('#avatar-ta-home', peerOf(currentUser), true);
+    paintAvatar('#avatar-me-home', currentUser, false);
+    paintAvatar('#avatar-ta-chat', peerOf(currentUser), false);
+    renderPeerMood();   // 刷新/登录后恢复对方最近心情（持久化，不会重置）
+    renderMyMood();     // 刷新/登录后恢复"我的当前心情"卡片
+    renderMoodGrid();   // 心情选择列表（内置 6 个 + 自定义 N 个）动态渲染
+    renderMineMoods();  // 我的页自定义心情列表
+    updatePeerStatus();
+    renderReminds();    // 提醒列表（内置 11 个 + 自定义项）动态渲染
+    renderMine();       // 我的页信息
+  }
+  function paintAvatar(sel, whoId, withRing) {
+    const el = document.querySelector(sel);
+    if (!el) return;
+    const url = getStore('avatar_' + whoId);
+    el.innerHTML = withRing ? '<span class="ring"></span>' : '';
+    if (url) {
+      el.style.backgroundImage = 'url("' + url + '")';
+      el.style.backgroundSize = 'cover';
+      el.style.backgroundPosition = 'center';
+      el.style.color = 'transparent';
+    } else {
+      el.style.backgroundImage = '';
+      el.style.color = '';
+      el.insertAdjacentText('afterbegin', ACCOUNTS[whoId].emoji);
+    }
+  }
+  /* 对方心情：实时同步 + 本地持久化，刷新/重开后自动恢复显示（不再回到默认值） */
+  function renderPeerMood(tip) {
+    const saved = getStore('peer_mood');
+    if (!saved) return;
+    const parts = saved.split('|');
+    const emoji = parts[0], title = parts[1], desc = parts[2];
+    const ts = parseInt(parts[3], 10);
+    const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    setTxt('ta-emoji', emoji);
+    setTxt('ta-mood-title', title);
+    setTxt('ta-mood-desc', desc);
+    let timeTxt = '⏰ 心情已同步';
+    if (tip) {
+      timeTxt = tip;
+    } else if (ts) {
+      const diff = Math.max(0, Date.now() - ts);
+      const min = Math.floor(diff / 60000);
+      if (min < 1) timeTxt = '⏰ 刚刚更新';
+      else if (min < 60) timeTxt = '⏰ ' + min + ' 分钟前更新';
+      else if (min < 1440) timeTxt = '⏰ ' + Math.floor(min / 60) + ' 小时前更新';
+      else timeTxt = '⏰ ' + Math.floor(min / 1440) + ' 天前更新';
+    }
+    setTxt('ta-mood-time', timeTxt);
+  }
+  function updatePeerStatus() {
+    if (!currentUser) return;
+    const on = rtOnline();
+    // 对方最近心情（实时同步过则用最新，否则默认）
+    const saved = getStore('peer_mood');
+    const moodTitle = saved ? saved.split('|')[1] : '在想你';
+    const cs = document.getElementById('chat-peer-status');
+    if (cs) cs.innerHTML = on ? '● 在线 · ' + moodTitle : '○ 离线 · 不在线';
+    const hs = document.getElementById('home-peer-status');
+    if (hs) hs.textContent = '对方心情：' + moodTitle + ' · ' + (on ? '● 在线' : '○ 离线');
+    const accPeer = document.getElementById('acc-peer');
+    if (accPeer) accPeer.innerHTML = '👤 ' + ACCOUNTS[peerOf(currentUser)].name + '　' + (on ? '<span style="color:#4CD9A9;">● 在线</span>' : '<span style="color:#B9A8CB;">○ 离线</span>');
+    renderLoginAccounts();
+  }
+  /* 登录页：渲染所有对的账号卡片，点击快速登录 */
+  function renderLoginAccounts() {
+    const box = document.getElementById('login-accounts');
+    if (!box) return;
+    const pairs = Object.entries(ALL_PAIRS);
+    const html = pairs.map(([pid, pair]) => {
+      return Object.entries(pair).map(([who, a]) => {
+        const on = isOnline(who, pid);
+        return '<div class="acc-chip ' + (on ? 'on' : 'off') + '" onclick="quickLogin(\'' + pid + '\',\'' + who + '\')">' +
+          '<span class="a-emoji">' + a.emoji + '</span>' +
+          '<div class="a-name">' + a.name + '<span class="a-txt">' + (on ? '● 在线' : '○ 离线') + '</span></div>' +
+          '<span class="a-dot"></span></div>';
+      }).join('');
+    }).join('');
+    box.innerHTML = html;
+  }
+  function quickLogin(pid, who) {
+    if (loggedIn) return;
+    loginAs(who, pid, true);
+  }
+  function openAccountSheet() {
+    if (!currentUser) return;
+    const cur = ACCOUNTS[currentUser];
+    const peer = ACCOUNTS[peerOf(currentUser)];
+    document.getElementById('acc-info').textContent = '当前登录：' + cur.name + '（账号 ' + cur.user + '）';
+    document.getElementById('acc-me').innerHTML = '👤 ' + cur.name + '（我）　<span style="color:#4CD9A9;">● 在线</span>';
+    document.getElementById('acc-peer').innerHTML = '👤 ' + peer.name + '　' + (isOnline(peerOf(currentUser)) ? '<span style="color:#4CD9A9;">● 在线</span>' : '<span style="color:#B9A8CB;">○ 离线</span>');
+    document.getElementById('acc-overlay').classList.add('show');
+  }
+  function closeAccSheet(e) {
+    if (!e || e.target.id === 'acc-overlay') document.getElementById('acc-overlay').classList.remove('show');
+  }
+
+  /* 爱心雨动画 */
+  /* 爱心雨动画：send=true 时同时实时通知对方，对方手机也弹同样的庆祝动画 */
+  function heartRain(send) {
+    const box = document.getElementById('heart-rain');
+    box.classList.add('show');
+    const emojis = ['💖','💗','💘','💕','💞','🩷','💝','🥰','✨'];
+    for (let i = 0; i < 26; i++) {
+      const h = document.createElement('span');
+      h.className = 'hr';
+      h.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      h.style.left = Math.random() * 100 + '%';
+      h.style.fontSize = (16 + Math.random() * 22) + 'px';
+      h.style.animationDuration = (1.6 + Math.random() * 1.8) + 's';
+      h.style.animationDelay = (Math.random() * 0.8) + 's';
+      box.appendChild(h);
+      setTimeout(() => h.remove(), 4200);
+    }
+    setTimeout(() => box.classList.remove('show'), 2400);
+    toast('💘 心动 +1');
+    if (send) {
+      const sent = rtSend({ t: 'celebrate' });
+      addActivity('💘', '你回应了' + peerName() + '的实时心情', sent ? '爱心雨已实时送达' : '对方离线 · 上线后补达');
+      addChatBubble('me', '💘 我回应了你：想你啦！', 'celebrate');
+      if (!sent) setTimeout(() => { toast(peerName() + '收到回应啦 🥰'); }, 1600);
+    }
+  }
+
+  /* 提醒：真实发送给对方（实时通道） + 写入今日互动 + 进聊天流 */
+  function remind(ic, msg, label) {
+    const name = label || msg || '想你了';
+    const icon = ic || '🔔';
+    const sent = rtSend({ t: 'remind', text: msg || name, ic: icon });
+    addChatBubble('me', icon + ' 提醒' + peerName() + '：' + escapeHtml(msg || name), 'remind');
+    if (sent) {
+      toast('🔔 已提醒' + peerName() + '「' + name + '」~ 实时送达 💌');
+      addActivity('🔔', '你提醒' + peerName() + '：' + name, '实时送达');
+    } else {
+      toast('🔔 已提醒' + peerName() + '「' + name + '」（对方离线，上线后补达）💌');
+      addActivity('🔔', '你提醒' + peerName() + '：' + name, '对方离线 · 上线后补达');
+      setTimeout(() => { toast(peerName() + '回复：收到啦，爱你 🥰'); }, 1600);
+    }
+  }
+  function openSheet() {
+    document.getElementById('sheet-overlay').classList.add('show');
+  }
+  function closeSheet(e) {
+    if (e.target.id === 'sheet-overlay') document.getElementById('sheet-overlay').classList.remove('show');
+  }
+  function pickRemind(el, ic, name) {
+    document.querySelectorAll('.remind-item').forEach(r => r.classList.remove('on'));
+    el.classList.add('on');
+    el.dataset.ic = ic;
+    el.dataset.text = name;
+  }
+
+  /* ===== 提醒列表：内置 11 个（含早安/晚安）+ 自定义（本地持久化 + 双方同步） ===== */
+  const REMIND_BUILTIN = [
+    { ic: '🥰', label: '想你了', msg: '想你了，抱抱我嘛', freq: '随时' },
+    { ic: '🌅', label: '早安', msg: '早安呀，新的一天也要元气满满 ☀️', freq: '常提醒' },
+    { ic: '🌙', label: '早点休息', msg: '早点休息哦，别熬夜', freq: '常提醒' },
+    { ic: '💧', label: '记得喝水', msg: '记得喝水呀，多喝温水', freq: '常提醒' },
+    { ic: '🍚', label: '按时吃饭', msg: '按时吃饭，别饿着肚子', freq: '常提醒' },
+    { ic: '🧥', label: '注意保暖', msg: '天冷了多穿件衣服', freq: '偶尔' },
+    { ic: '🏠', label: '早点回家', msg: '早点回家，注意安全', freq: '偶尔' },
+    { ic: '🤗', label: '抱抱我', msg: '抱抱我嘛，求安慰', freq: '随时' },
+    { ic: '😘', label: '亲亲', msg: '亲亲，么么哒', freq: '随时' },
+    { ic: '⚠️', label: '注意安全', msg: '路上注意安全哦', freq: '偶尔' },
+    { ic: '🌃', label: '晚安', msg: '晚安，做个甜甜的梦 💤', freq: '常提醒' }
+  ];
+  function getCustomReminds() {
+    try { return JSON.parse(getStore('remind_custom') || '[]'); } catch (e) { return []; }
+  }
+  function saveCustomReminds(arr) {
+    try { saveStore('remind_custom', JSON.stringify(arr)); } catch (e) {}
+  }
+  function allReminds() {
+    return REMIND_BUILTIN.map(r => Object.assign({}, r, { custom: false }))
+      .concat(getCustomReminds().map((r, i) => Object.assign({}, r, { custom: true, customIdx: i })));
+  }
+  function renderReminds() {
+    const qWrap = document.getElementById('quick-scroll');
+    const sWrap = document.getElementById('remind-list');
+    const list = allReminds();
+    if (qWrap) {
+      qWrap.innerHTML = list.map(r =>
+        '<button class="quick-item" onclick="remind(\'' + r.ic + '\',\'' + r.msg + '\',\'' + r.label + '\')">' +
+        '<span class="q-ic">' + r.ic + '</span><div class="q-tx">' + r.label + '</div></button>'
+      ).join('');
+    }
+    if (sWrap) {
+      sWrap.innerHTML = list.map(r =>
+        '<div class="remind-item" data-ic="' + r.ic + '" data-label="' + r.label + '" onclick="pickRemind(this,\'' + r.ic + '\',\'' + r.label + '\')">' +
+        '<span class="r-ic">' + r.ic + '</span>' + r.label + '<span class="r-freq">' + r.freq + '</span></div>'
+      ).join('');
+      const firstEl = sWrap.querySelector('.remind-item');
+      if (firstEl) pickRemind(firstEl, firstEl.dataset.ic, firstEl.dataset.label);
+    }
+    const cnt = document.getElementById('quick-count');
+    if (cnt) cnt.textContent = list.length;
+  }
+  /* 自定义提醒：添加 / 删除，并实时同步到双方账号 */
+  function addCustomRemind() {
+    const inp = document.getElementById('custom-remind-input');
+    const txt = (inp && inp.value.trim()) || '';
+    if (!txt) { toast('先输入提醒内容再添加哦'); return; }
+    const list = getCustomReminds();
+    list.push({ ic: '💌', label: txt, msg: txt, freq: '自定义' });
+    saveCustomReminds(list);
+    if (inp) inp.value = '';
+    renderReminds();
+    renderMine();
+    const sent = rtSend({ t: 'remind_sync', custom: list });
+    toast(sent ? '✅ 已添加并同步给对方' : '✅ 已添加（对方离线，上线后自动同步）');
+  }
+  function delCustomRemind(idx) {
+    const list = getCustomReminds();
+    if (idx < 0 || idx >= list.length) return;
+    list.splice(idx, 1);
+    saveCustomReminds(list);
+    renderReminds();
+    renderMine();
+    const sent = rtSend({ t: 'remind_sync', custom: list });
+    toast(sent ? '🗑 已删除并同步' : '🗑 已删除（对方离线，上线后自动同步）');
+  }
+  /* 自定义心情：内置 6 个 + 自定义（本地持久化 + 双方同步） */
+  const MOOD_BUILTIN = [
+    { emoji: '🥰', title: '在想你', desc: '温柔又心动' },
+    { emoji: '😤', title: '在生气', desc: '快来哄我' },
+    { emoji: '🥺', title: '求安慰', desc: '要抱抱举高高' },
+    { emoji: '🤩', title: '超开心', desc: '快乐要分享' },
+    { emoji: '😴', title: '有点累', desc: '想早点睡' },
+    { emoji: '🤗', title: '抱抱我', desc: '求拥抱模式' }
+  ];
+  function getCustomMoods() {
+    try { return JSON.parse(getStore('mood_custom') || '[]'); } catch (e) { return []; }
+  }
+  function saveCustomMoods(arr) {
+    try { saveStore('mood_custom', JSON.stringify(arr)); } catch (e) {}
+  }
+  function allMoods() {
+    return MOOD_BUILTIN.map(m => Object.assign({}, m, { custom: false }))
+      .concat(getCustomMoods().map((m, i) => Object.assign({}, m, { custom: true, customIdx: i })));
+  }
+  function renderMoodGrid() {
+    const wrap = document.getElementById('mood-grid');
+    if (!wrap) return;
+    const list = allMoods();
+    wrap.innerHTML = list.map(m =>
+      '<div class="mood-opt' + (m.custom ? ' custom' : '') + '" data-mood="' + m.emoji + '|' + m.title + '|' + m.desc + '" onclick="pickMood(this)">' +
+        '<span class="m-ic">' + m.emoji + '</span><span class="m-name">' + m.title + '</span><span class="m-desc">' + m.desc + '</span>' +
+        (m.custom ? '<button class="mood-del" onclick="event.stopPropagation();delCustomMood(' + m.customIdx + ')">✕</button>' : '') +
+      '</div>'
+    ).join('');
+    const first = wrap.querySelector('.mood-opt');
+    if (first && !wrap.querySelector('.mood-opt.on')) pickMood(first);
+  }
+  function renderMineMoods() {
+    const box = document.getElementById('mine-mood-list');
+    if (!box) return;
+    box.innerHTML = allMoods().map(m =>
+      '<div class="mine-remind-item' + (m.custom ? ' custom' : '') + '">' +
+        '<span class="mr-ic">' + m.emoji + '</span>' + m.title +
+        '<span class="mr-badge">' + (m.custom ? '自定义 🌈' : '内置') + '</span>' +
+        (m.custom ? '<button class="mr-del" onclick="delCustomMood(' + m.customIdx + ')">✕</button>' : '') +
+      '</div>'
+    ).join('');
+  }
+  function addCustomMood() {
+    const inp = document.getElementById('custom-mood-input');
+    const txt = (inp && inp.value.trim()) || '';
+    if (!txt) { toast('先输入心情名再添加哦'); return; }
+    const emo = (document.getElementById('custom-mood-emoji') || {}).value || '💖';
+    const list = getCustomMoods();
+    list.push({ emoji: emo, title: txt, desc: '自定义心情 · 想告诉你' });
+    saveCustomMoods(list);
+    if (inp) inp.value = '';
+    renderMoodGrid();
+    renderMineMoods();
+    const sent = rtSend({ t: 'mood_sync', custom: list });
+    toast(sent ? '✅ 已添加并同步给对方' : '✅ 已添加（对方离线，上线后自动同步）');
+  }
+  function delCustomMood(idx) {
+    const list = getCustomMoods();
+    if (idx < 0 || idx >= list.length) return;
+    list.splice(idx, 1);
+    saveCustomMoods(list);
+    renderMoodGrid();
+    renderMineMoods();
+    const sent = rtSend({ t: 'mood_sync', custom: list });
+    toast(sent ? '🗑 已删除并同步' : '🗑 已删除（对方离线，上线后自动同步）');
+  }
+  /* 我的页渲染 */
+  function renderMine() {
+    if (!currentUser) return;
+    const cur = ACCOUNTS[currentUser];
+    const peer = ACCOUNTS[peerOf(currentUser)];
+    const n = document.getElementById('mine-name');
+    if (n) n.textContent = cur.emoji + ' ' + cur.name;
+    const p = document.getElementById('mine-peer');
+    if (p) p.textContent = '💞 已绑定 ' + peer.name + (isOnline(peerOf(currentUser)) ? ' · ● 在线' : ' · ○ 离线');
+    paintAvatar('#avatar-mine-me', currentUser, false);
+    const box = document.getElementById('mine-remind-list');
+    if (!box) return;
+    const list = allReminds();
+    box.innerHTML = list.map((r, i) =>
+      '<div class="mine-remind-item' + (r.custom ? ' custom' : '') + '">' +
+        '<span class="mr-ic">' + r.ic + '</span>' + r.label +
+        '<span class="mr-badge">' + (r.custom ? '自定义 💌' : r.freq) + '</span>' +
+        (r.custom ? '<button class="mr-del" onclick="delCustomRemind(' + (i - REMIND_BUILTIN.length) + ')">✕</button>' : '') +
+      '</div>'
+    ).join('');
+  }
+  function openAcc() { openAccountSheet(); }
+  function sendRemind() {
+    const sel = document.querySelector('.remind-item.on');
+    const name = (sel && sel.dataset.text) || '记得喝水';
+    const icon = (sel && sel.dataset.ic) || '🔔';
+    document.getElementById('sheet-overlay').classList.remove('show');
+    const sent = rtSend({ t: 'remind', text: name, ic: icon });
+    addChatBubble('me', icon + ' 提醒' + peerName() + '：' + escapeHtml(name), 'remind');
+    if (sent) {
+      toast('🔔 已提醒' + peerName() + '「' + name + '」~ 实时送达 💌');
+      addActivity('🔔', '你提醒' + peerName() + '：' + name, '实时送达');
+      // 对方在线，等真实回复（由对方手机上的操作产生）；不模拟
+    } else {
+      toast('🔔 已提醒' + peerName() + '「' + name + '」（对方离线，上线后补达）💌');
+      addActivity('🔔', '你提醒' + peerName() + '：' + name, '对方离线 · 上线后补达');
+      setTimeout(() => { toast(peerName() + '回复：收到啦，爱你 🥰'); }, 1600);
+    }
+  }
+
+  /* ===== 今日互动：真实记录（当天事件实时写入 + localStorage 持久化） ===== */
+  function addActivity(ic, title, sub) {
+    const wrap = document.getElementById('today-list');
+    if (!wrap) return;
+    const empty = wrap.querySelector('.today-empty');
+    if (empty) empty.remove();
+    const time = timeNow();
+    const row = document.createElement('div');
+    row.className = 'today-row';
+    row.innerHTML = '<span class="t-ic">' + ic + '</span><div class="t-tx"><b>' + escapeHtml(title) + '</b><small>' + escapeHtml(sub) + '</small></div><span class="t-time">' + time + '</span>';
+    wrap.insertBefore(row, wrap.firstChild);
+    // 持久化到当天记录（跨刷新保留，次日自动清空换新）
+    const key = 'activity_' + fmtDate(today0());
+    let arr = [];
+    try { arr = JSON.parse(getStore(key) || '[]'); } catch (e) {}
+    arr.unshift({ ic: ic, title: title, sub: sub, time: time });
+    if (arr.length > 30) arr.length = 30;
+    saveStore(key, JSON.stringify(arr));
+  }
+  function renderActivities() {
+    const wrap = document.getElementById('today-list');
+    if (!wrap) return;
+    const key = 'activity_' + fmtDate(today0());
+    let arr = [];
+    try { arr = JSON.parse(getStore(key) || '[]'); } catch (e) {}
+    wrap.innerHTML = '';
+    if (!arr.length) {
+      wrap.innerHTML = '<div class="today-row today-empty"><span class="t-ic">🌙</span><div class="t-tx"><b>今天还没有互动记录</b><small>去给' + peerName() + '发条消息，或更新一下心情吧～</small></div></div>';
+      return;
+    }
+    arr.forEach(function (a) {
+      const row = document.createElement('div');
+      row.className = 'today-row';
+      row.innerHTML = '<span class="t-ic">' + a.ic + '</span><div class="t-tx"><b>' + escapeHtml(a.title) + '</b><small>' + escapeHtml(a.sub) + '</small></div><span class="t-time">' + a.time + '</span>';
+      wrap.appendChild(row);
+    });
+  }
+  /* 清空今日互动（二次确认防误触，只清自己本地视图，不同步对方） */
+  function clearToday() {
+    const btn = document.querySelector('.today-clear');
+    if (!btn) return;
+    if (btn.dataset.arm !== '1') {
+      btn.dataset.arm = '1';
+      btn.textContent = '再点一次确认';
+      setTimeout(function () { btn.dataset.arm = '0'; btn.textContent = '清空'; }, 2500);
+      return;
+    }
+    const key = 'activity_' + fmtDate(today0());
+    saveStore(key, '[]');
+    renderActivities();
+    btn.dataset.arm = '0';
+    btn.textContent = '清空';
+    toast('🗑️ 今日互动已清空');
+  }
+
+  /* 心情 */
+  function pickMood(el) {
+    document.querySelectorAll('.mood-opt').forEach(o => o.classList.remove('on'));
+    el.classList.add('on');
+    const [e, t, d] = el.dataset.mood.split('|');
+    document.getElementById('pv-emoji').textContent = e;
+    document.getElementById('pv-title').textContent = t;
+    document.getElementById('pv-desc').textContent = d;
+  }
+  /* 我的当前心情：从本地读取并显示在心情页顶部卡片（刷新/重开仍保留） */
+  function renderMyMood() {
+    const card = document.getElementById('mood-mine');
+    if (!card) return;
+    const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    const saved = getStore('my_mood');
+    if (!saved) {
+      card.classList.add('empty');
+      setTxt('mm-emoji', '😶');
+      setTxt('mm-title', '我还没设置心情');
+      setTxt('mm-desc', '选一个心情，对方就能实时看到 💫');
+      setTxt('mm-time', '');
+      return;
+    }
+    const parts = saved.split('|');
+    const emoji = parts[0], title = parts[1], desc = parts[2] || '';
+    const ts = parseInt(getStore('my_mood_ts') || '0', 10);
+    card.classList.remove('empty');
+    setTxt('mm-emoji', emoji);
+    setTxt('mm-title', '我的心情：' + title);
+    setTxt('mm-desc', desc);
+    let timeTxt = '';
+    if (ts) {
+      const diff = Math.max(0, Date.now() - ts);
+      const min = Math.floor(diff / 60000);
+      if (min < 1) timeTxt = '刚刚设置';
+      else if (min < 60) timeTxt = min + ' 分钟前设置';
+      else if (min < 1440) timeTxt = Math.floor(min / 60) + ' 小时前设置';
+      else timeTxt = Math.floor(min / 1440) + ' 天前设置';
+    }
+    setTxt('mm-time', '⏰ ' + timeTxt);
+  }
+  function clearMyMood() {
+    saveStore('my_mood', '');
+    saveStore('my_mood_ts', '');
+    renderMyMood();
+    toast('🗑 已清除我的心情');
+  }
+  function saveMood() {
+    const cur = document.querySelector('.mood-opt.on') || document.querySelector('.mood-opt');
+    if (!cur) { toast('先选一个心情吧'); return; }
+    const [e, t, d] = cur.dataset.mood.split('|');
+    saveStore('my_mood', e + '|' + t + '|' + d);
+    saveStore('my_mood_ts', String(Date.now()));
+    renderMyMood();
+    const sent = rtSend({ t: 'mood', emoji: e, title: t, desc: d });
+    if (sent) {
+      // 已实时发给对方，对方手机上会立刻看到我的新心情
+      toast('✅ 心情已实时同步给' + peerName());
+    } else {
+      // 对方离线：本地演示效果（对方上线后打开也能看到），并持久化避免刷新丢失
+      saveStore('peer_mood', e + '|' + t + '|' + d + '|' + Date.now());
+      renderPeerMood('刚刚更新');
+      toast('✅ 心情已设置（对方离线，上线即可见）');
+    }
+    addActivity('🌈', '你的心情更新为：' + t, e + ' ' + d);
+    addChatBubble('me', '🌈 我设置了心情「' + escapeHtml(t) + '」 ' + e, 'mood');
+    heartRain();
+    setTimeout(() => goTab('home'), 1200);
+  }
+
+  /* Tab 切换 */
+  function goTab(tab) {
+    showPage('page-' + tab);
+    if (tab === 'mood') renderMyMood();
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('on'));
+    document.querySelector('.tab-btn[data-tab="' + tab + '"]').classList.add('on');
+  }
+
+  /* ===== 聊天气泡：统一插入 + 当天历史持久化（含提醒/心情事件） ===== */
+  function chatKey() { return 'chat_' + fmtDate(today0()); }
+  function addChatBubble(who, innerHtml, type) {
+    const body = document.querySelector('#page-chat .chat-body');
+    if (!body) return null;
+    body.querySelectorAll('.chat-empty').forEach(n => n.remove());   // 有消息了，清掉空状态行
+    saveStore('chat_cleared_' + fmtDate(today0()), '0');             // 有新消息，取消清空态
+    const typing = body.querySelector('.typing');
+    const b = document.createElement('div');
+    b.className = 'bubble ' + (who === 'ta' ? 'ta' : 'me');
+    b.innerHTML = innerHtml + '<span class="b-time">' + timeNow() + '</span>';
+    if (typing) body.insertBefore(b, typing); else body.appendChild(b);
+    body.scrollTop = body.scrollHeight;
+    // 持久化当天聊天（跨刷新保留，次日换新）
+    let arr = [];
+    try { arr = JSON.parse(getStore(chatKey()) || '[]'); } catch (e) {}
+    arr.push({ who: who, type: type, html: innerHtml, time: timeNow() });
+    saveStore(chatKey(), JSON.stringify(arr));
+    return b;
+  }
+  // 启动时恢复当天聊天历史；有历史则清掉初始示例气泡，避免重复
+  function renderChatHistory() {
+    const body = document.querySelector('#page-chat .chat-body');
+    if (!body) return;
+    let arr = [];
+    try { arr = JSON.parse(getStore(chatKey()) || '[]'); } catch (e) {}
+    if (!arr.length) {
+      // 清空过聊天 → 移除初始示例气泡，显示空状态（刷新/重开仍保持）
+      if (getStore('chat_cleared_' + fmtDate(today0())) === '1') {
+        body.querySelectorAll(':scope > :not(.typing)').forEach(n => n.remove());
+        if (!body.querySelector('.chat-empty')) {
+          const empty = document.createElement('div');
+          empty.className = 'chat-empty';
+          empty.innerHTML = '<div class="ce-box">💬</div><p>今天还没有聊天记录<br>说点什么甜甜的吧～</p>';
+          const typing = body.querySelector('.typing');
+          if (typing) body.insertBefore(empty, typing); else body.appendChild(empty);
+        }
+      }
+      return;
+    }
+    body.querySelectorAll(':scope > :not(.typing)').forEach(n => n.remove());
+    const typing = body.querySelector('.typing');
+    arr.forEach(it => {
+      const b = document.createElement('div');
+      b.className = 'bubble ' + (it.who === 'ta' ? 'ta' : 'me');
+      b.innerHTML = it.html + '<span class="b-time">' + it.time + '</span>';
+      if (typing) body.insertBefore(b, typing); else body.appendChild(b);
+    });
+    body.scrollTop = body.scrollHeight;
+  }
+  /* 清空当天聊天记录（二次确认防误触，只清自己本地，不同步对方） */
+  function clearChat() {
+    const btn = document.querySelector('.chat-clear');
+    if (!btn) return;
+    if (btn.dataset.arm !== '1') {
+      btn.dataset.arm = '1';
+      btn.classList.add('armed');
+      btn.textContent = '再点';
+      setTimeout(function () { btn.dataset.arm = '0'; btn.classList.remove('armed'); btn.textContent = '🗑️'; }, 2500);
+      return;
+    }
+    btn.dataset.arm = '0';
+    btn.classList.remove('armed');
+    btn.textContent = '🗑️';
+    saveStore(chatKey(), '[]');
+    saveStore('chat_cleared_' + fmtDate(today0()), '1');
+    renderChatHistory();
+    toast('🗑️ 聊天记录已清空');
+  }
+
+  /* 发送消息（实时：对方手机立刻收到） */
+  function sendMsg() {
+    const input = document.getElementById('chat-text');
+    const txt = input.value.trim();
+    if (!txt) return;
+    addChatBubble('me', escapeHtml(txt), 'chat');
+    input.value = '';
+    if (rtSend({ t: 'chat', text: txt })) {
+      // 对方在线，已实时送达；不模拟回复
+      addActivity('💌', '你给' + peerName() + '发了消息', '“' + txt.slice(0, 20) + (txt.length > 20 ? '…' : '') + '” · 实时送达');
+    } else {
+      // 对方离线：保留单机模拟回复，保证体验
+      setTimeout(() => {
+        addChatBubble('ta', '收到！我也想你 💕', 'chat');
+      }, 1200);
+      toast('对方离线，已切换演示模式');
+    }
+  }
+
+  /* ===== 纪念日自动计算（每年自动更新） ===== */
+  // 每对情侣独立存储恋爱开始日期和生日，key 为 dating_start / birth_ta / birth_me
+  function getDatingStart() {
+    const v = getStore('dating_start');
+    if (v) { const d = new Date(v); if (!isNaN(d.getTime())) return d; }
+    // 只有默认对（树璇）保留旧硬编码默认，新对返回 null
+    if (currentPairId === '') return new Date(2018, 0, 30);
+    return null;
+  }
+  function getBirth(who) {
+    const v = getStore('birth_' + who);
+    if (v) { const p = v.split('-'); if (p.length === 2) return { m: parseInt(p[0]), d: parseInt(p[1]) }; }
+    if (currentPairId === '') {
+      if (who === 'ta') return { m: 10, d: 24 };
+      if (who === 'me') return { m: 10, d: 14 };
+    }
+    return null;
+  }
+  function savePairDates(dating, birthTa, birthMe, silent) {
+    if (dating) saveStore('dating_start', dating);
+    else saveStore('dating_start', '');
+    if (birthTa) saveStore('birth_ta', birthTa.m + '-' + birthTa.d);
+    else saveStore('birth_ta', '');
+    if (birthMe) saveStore('birth_me', birthMe.m + '-' + birthMe.d);
+    else saveStore('birth_me', '');
+    renderAnniv();
+    if (!silent) rtSend({ t: 'anniv_dates', dating, birth_ta: birthTa, birth_me: birthMe });
+  }
+
+  function today0() {
+    const t = new Date();
+    return new Date(t.getFullYear(), t.getMonth(), t.getDate());
+  }
+  function diffDays(a, b) { return Math.round((a - b) / 86400000); }
+  function fmtDate(d) {
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function nextBirthday(bd) {
+    if (!bd) return null;
+    const t = today0();
+    let d = new Date(t.getFullYear(), bd.m, bd.d);
+    if (d < t) d = new Date(t.getFullYear() + 1, bd.m, bd.d);
+    return d;
+  }
+  function nextAnniversary() {
+    const ds = getDatingStart();
+    if (!ds) return null;
+    const t = today0();
+    let y = ds.getFullYear() + 1;
+    while (new Date(y, ds.getMonth(), ds.getDate()) <= t) y++;
+    return { n: y - ds.getFullYear(), date: new Date(y, ds.getMonth(), ds.getDate()) };
+  }
+  function numOrToday(n) { return n <= 0 ? '🎉 今天' : n + ' 天'; }
+
+  function renderAnniv() {
+    const t = today0();
+    const ds = getDatingStart();
+    const bMe = getBirth('me');
+    const bTa = getBirth('ta');
+    const nameMe = ACCOUNTS.me.name;
+    const nameTa = ACCOUNTS.ta.name;
+
+    if (!ds) {
+      // 新对未设置日期：显示引导
+      document.getElementById('d-num').innerHTML = '0 <span style="font-size:16px;font-weight:600;">天</span>';
+      document.getElementById('d-label').textContent = '💍 点击设置恋爱开始日期';
+      document.getElementById('d-next').innerHTML = '尚未设置<br>⏳ 点击下方按钮添加纪念日';
+      document.getElementById('anniv-list').innerHTML = 
+        '<div class="anniv-card" style="justify-content:center;padding:28px;color:var(--ink-soft);cursor:pointer;" onclick="openDatesSheet()">' +
+        '<div style="text-align:center;">💞 点击设置恋爱开始日期<br><small>设置后自动计算纪念日倒数</small></div></div>';
+      return;
+    }
+
+    const days = diffDays(t, ds);
+    const dsFmt = ds.getFullYear() + '.' + String(ds.getMonth()+1).padStart(2,'0') + '.' + String(ds.getDate()).padStart(2,'0');
+
+    // 首页纪念日卡片
+    document.getElementById('d-num').innerHTML = days + ' <span style="font-size:16px;font-weight:600;">天</span>';
+    document.getElementById('d-label').textContent = '💍 在一起第 ' + days + ' 天 · 始于 ' + dsFmt;
+
+    // 最近的下一个纪念日
+    const custom = getCustomAnniv();
+    const cands = [];
+    const ann = nextAnniversary();
+    if (ann) cands.push({ d: ann.date, label: '🏆 在一起 ' + ann.n + ' 周年' });
+    if (bMe) { const d = nextBirthday(bMe); if (d) cands.push({ d, label: '🎂 ' + nameMe + '生日' }); }
+    if (bTa) { const d = nextBirthday(bTa); if (d) cands.push({ d, label: '🎂 ' + nameTa + '生日' }); }
+    cands.push(...custom.map(c => ({ d: nextCustomDate(c.m, c.d), label: c.ic + ' ' + c.name })));
+    if (cands.length > 0) {
+      const next = cands.sort((a, b) => a.d - b.d)[0];
+      document.getElementById('d-next').innerHTML = '下一个纪念日<br>' + next.label + ' · ' + diffDays(next.d, t) + ' 天后';
+    } else {
+      document.getElementById('d-next').innerHTML = '暂无纪念日<br>👇 点击下方添加';
+    }
+
+    // 相册页纪念日列表
+    const items = [
+      { done: true, ic: '💍', name: '在一起的日子', sub: dsFmt + ' · 那天我们在一起', num: days + ' 天', tag: '✅ 已达成 · 持续中' }
+    ];
+    const nextHundred = Math.ceil(days / 100) * 100;
+    const nextHundredDate = new Date(ds.getTime() + nextHundred * 86400000);
+    items.push({ ic: '💖', name: '在一起 ' + nextHundred + ' 天', sub: fmtDate(nextHundredDate) + ' · 小确幸', num: numOrToday(diffDays(nextHundredDate, t)), tag: '⏳ 倒数中' });
+    if (bMe) { const d = nextBirthday(bMe); items.push({ ic: '🎂', name: nameMe + '的生日', sub: '每年 ' + (bMe.m+1) + '-' + String(bMe.d).padStart(2,'0') + ' · 生日', num: numOrToday(diffDays(d, t)), tag: '⏳ 倒数中' }); }
+    if (bTa) { const d = nextBirthday(bTa); items.push({ ic: '🎂', name: nameTa + '的生日', sub: '每年 ' + (bTa.m+1) + '-' + String(bTa.d).padStart(2,'0') + ' · 生日', num: numOrToday(diffDays(d, t)), tag: '⏳ 倒数中' }); }
+    if (ann) items.push({ ic: '🏆', name: '在一起 ' + ann.n + ' 周年', sub: fmtDate(ann.date) + ' · 我们的周年', num: numOrToday(diffDays(ann.date, t)), tag: '⏳ 倒数中' });
+    custom.forEach((c, i) => {
+      const d = nextCustomDate(c.m, c.d);
+      const diff = diffDays(d, t);
+      items.push({
+        custom: true, customIdx: i, ic: c.ic, name: c.name,
+        sub: '每年 ' + (c.m + 1) + '-' + String(c.d).padStart(2, '0') + ' · 我们的纪念日',
+        num: numOrToday(diff), tag: diff === 0 ? '🎉 就是今天' : '⏳ 倒数中'
+      });
+    });
+    document.getElementById('anniv-list').innerHTML = items.map(it =>
+      '<div class="anniv-card' + (it.done ? ' done' : '') + (it.custom ? ' custom' : '') + '"' +
+        (it.custom ? ' onclick="showAnnivDetail(' + it.customIdx + ')"' : '') + '>' +
+        '<div class="a-ic">' + it.ic + '</div>' +
+        '<div class="a-info"><b>' + it.name + '</b><small>' + it.sub + '</small></div>' +
+        '<div class="a-count"><div class="a-num">' + it.num + '</div><div class="a-label">' + it.tag + '</div></div>' +
+      '</div>'
+    ).join('');
+  }
+
+  /* ===== 自定义纪念日：本地持久化 + 双方实时同步 ===== */
+  function getCustomAnniv() {
+    try { return JSON.parse(getStore('anniv_custom') || '[]'); } catch (e) { return []; }
+  }
+  function saveCustomAnniv(arr) {
+    try { saveStore('anniv_custom', JSON.stringify(arr)); } catch (e) {}
+  }
+  function nextCustomDate(m, d) {
+    const t = today0();
+    let dt = new Date(t.getFullYear(), m, d);
+    if (dt < t) dt = new Date(t.getFullYear() + 1, m, d);
+    return dt;
+  }
+  let annivEditIdx = -1;
+  function openAnnivSheet(idx) {
+    annivEditIdx = (typeof idx === 'number') ? idx : -1;
+    const list = getCustomAnniv();
+    const editing = annivEditIdx >= 0 && annivEditIdx < list.length;
+    const it = editing ? list[annivEditIdx] : null;
+    document.getElementById('anniv-name').value = it ? it.name : '';
+    document.getElementById('anniv-date').value = it ? fmtLocalDate(new Date(today0().getFullYear(), it.m, it.d)) : '';
+    document.querySelectorAll('#anniv-emoji-row .ae').forEach((e, i) => {
+      const on = editing ? e.textContent === it.ic : i === 0;
+      e.classList.toggle('on', on);
+    });
+    document.getElementById('anniv-title').textContent = editing ? '✏️ 编辑纪念日' : '🌸 添加纪念日';
+    document.getElementById('anniv-sub').textContent = editing ? '修改这个重要的日子，双方都会同步' : '记下一个重要的日子，双方都会同步看到';
+    document.getElementById('anniv-save-btn').textContent = editing ? '✅ 保存修改并同步' : '✅ 添加并同步';
+    document.getElementById('anniv-overlay').classList.add('show');
+  }
+  function fmtLocalDate(dt) {
+    const y = dt.getFullYear(), m = String(dt.getMonth() + 1).padStart(2, '0'), d = String(dt.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + d;
+  }
+  function closeAnnivSheet(e) {
+    if (!e || e.target.id === 'anniv-overlay') document.getElementById('anniv-overlay').classList.remove('show');
+  }
+  function pickAnnivEmoji(el) {
+    document.querySelectorAll('#anniv-emoji-row .ae').forEach(x => x.classList.remove('on'));
+    el.classList.add('on');
+  }
+  function editCustomAnniv(idx) {
+    const list = getCustomAnniv();
+    if (idx < 0 || idx >= list.length) return;
+    openAnnivSheet(idx);
+  }
+  // 自定义纪念日详情面板：点击卡片展开，编辑/删除按钮放在这里
+  let annivDetailIdx = -1;
+  function showAnnivDetail(idx) {
+    const list = getCustomAnniv();
+    if (idx < 0 || idx >= list.length) return;
+    const it = list[idx];
+    annivDetailIdx = idx;
+    document.getElementById('ad-ic').textContent = it.ic;
+    document.getElementById('ad-name').textContent = it.name;
+    const dt = nextCustomDate(it.m, it.d);
+    document.getElementById('ad-date').textContent =
+      '每年 ' + String(it.m + 1).padStart(2, '0') + '-' + String(it.d).padStart(2, '0') +
+      ' · 还有 ' + diffDays(dt, today0()) + ' 天';
+    document.getElementById('anniv-detail-overlay').classList.add('show');
+  }
+  function closeAnnivDetail(e) {
+    if (!e || e.target.id === 'anniv-detail-overlay') {
+      document.getElementById('anniv-detail-overlay').classList.remove('show');
+    }
+  }
+  function editCustomAnnivFromDetail() {
+    closeAnnivDetail();
+    openAnnivSheet(annivDetailIdx);
+  }
+  function delCustomAnnivFromDetail() {
+    if (!confirm('确定删除「' + (getCustomAnniv()[annivDetailIdx] || {}).name + '」这个纪念日吗？')) return;
+    closeAnnivDetail();
+    delCustomAnniv(annivDetailIdx);
+  }
+  function saveAnniv() {
+    const name = (document.getElementById('anniv-name').value || '').trim();
+    if (!name) { toast('先给纪念日起个名字哦'); return; }
+    const dateStr = document.getElementById('anniv-date').value;
+    if (!dateStr) { toast('再选一个日期哦'); return; }
+    const emoEl = document.querySelector('#anniv-emoji-row .ae.on');
+    const ic = emoEl ? emoEl.textContent : '💖';
+    const date = new Date(dateStr + 'T00:00:00');
+    if (isNaN(date.getTime())) { toast('日期格式不对哦'); return; }
+    const list = getCustomAnniv();
+    const item = { ic: ic, name: name, m: date.getMonth(), d: date.getDate() };
+    if (annivEditIdx >= 0 && annivEditIdx < list.length) {
+      list[annivEditIdx] = item;
+    } else {
+      list.push(item);
+    }
+    saveCustomAnniv(list);
+    annivEditIdx = -1;
+    document.getElementById('anniv-overlay').classList.remove('show');
+    renderAnniv();
+    const sent = rtSend({ t: 'anniv_sync', custom: list });
+    toast(sent ? '✅ 已保存并同步给对方' : '✅ 已保存（对方离线，上线后自动同步）');
+  }
+  function delCustomAnniv(idx) {
+    const list = getCustomAnniv();
+    if (idx < 0 || idx >= list.length) return;
+    list.splice(idx, 1);
+    if (annivEditIdx === idx) annivEditIdx = -1;
+    else if (annivEditIdx > idx) annivEditIdx--;
+    saveCustomAnniv(list);
+    renderAnniv();
+    const sent = rtSend({ t: 'anniv_sync', custom: list });
+    toast(sent ? '🗑 已删除并同步' : '🗑 已删除（对方离线，上线后自动同步）');
+  }
+
+  /* ===== 恋爱开始日期 & 生日设置（每对独立） ===== */
+  function openDatesSheet() {
+    const ds = getDatingStart();
+    document.getElementById('dates-start').value = ds ? fmtLocalDate(ds) : '';
+    const bTa = getBirth('ta'), bMe = getBirth('me');
+    const t = today0();
+    document.getElementById('dates-birth-ta').value = bTa ? fmtLocalDate(new Date(t.getFullYear(), bTa.m, bTa.d)) : '';
+    document.getElementById('dates-birth-me').value = bMe ? fmtLocalDate(new Date(t.getFullYear(), bMe.m, bMe.d)) : '';
+    document.getElementById('dates-overlay').classList.add('show');
+  }
+  function closeDatesSheet(e) {
+    if (!e || e.target.id === 'dates-overlay') document.getElementById('dates-overlay').classList.remove('show');
+  }
+  function saveDates() {
+    const ds = document.getElementById('dates-start').value;
+    if (!ds) { toast('请设置恋爱开始日期'); return; }
+    const dating = new Date(ds + 'T00:00:00');
+    if (isNaN(dating.getTime())) { toast('日期格式不对'); return; }
+    const bTaStr = document.getElementById('dates-birth-ta').value;
+    const bMeStr = document.getElementById('dates-birth-me').value;
+    let bTa = null, bMe = null;
+    if (bTaStr) { const d = new Date(bTaStr + 'T00:00:00'); if (!isNaN(d.getTime())) bTa = { m: d.getMonth(), d: d.getDate() }; }
+    if (bMeStr) { const d = new Date(bMeStr + 'T00:00:00'); if (!isNaN(d.getTime())) bMe = { m: d.getMonth(), d: d.getDate() }; }
+    savePairDates(fmtLocalDate(dating), bTa, bMe);
+    document.getElementById('dates-overlay').classList.remove('show');
+    checkCelebration();
+    toast('✅ 日期已更新，纪念日自动刷新');
+  }
+
+  /* ===== 照片墙 & 头像上传（localStorage 持久化 + 自动压缩，兼容手机大图） ===== */
+  const storeMem = {};
+  // 按对隔离：非全局 key 加 pairId 前缀（默认对 '' 无前缀，兼容旧数据）
+  function storeKey(k) {
+    if (k === 'session_user') return k; // 全局：存储当前登录会话
+    return (currentPairId ? currentPairId + '_' : '') + k;
+  }
+  function getStore(k) {
+    try { return localStorage.getItem('lovely_' + storeKey(k)); } catch (e) { return storeMem[k] || null; }
+  }
+  function saveStore(k, v) {
+    try { localStorage.setItem('lovely_' + storeKey(k), v); return true; }
+    catch (e) { storeMem[k] = v; return false; }
+  }
+  const fileInput = document.getElementById('file-input');
+  let uploadTarget = null;
+
+  function pickFile(target) {
+    uploadTarget = target;
+    // 关键修复：每次点击在用户手势内【即时创建】一个全新的 file 输入框再触发 click，用完即弃。
+    // 复用一个隐藏的 file 输入框时，移动端 WebView / iOS Safari 常会静默忽略 .click()，导致无法调起相机/图库。
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = 'image/*';
+    inp.style.cssText = 'position:fixed;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none;z-index:-1;';
+    inp.onchange = onFileChosen;
+    document.body.appendChild(inp);
+    inp.click();
+    setTimeout(() => inp.remove(), 30000); // 用完即弃，防残留堆积
+  }
+
+  // 解码图片：优先 createImageBitmap（自动应用 EXIF 方向，避免手机拍照图旋转 90°），不支持则回退 Image
+  function decodeImage(file) {
+    const viaImg = () => new Promise((res, rej) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => { URL.revokeObjectURL(url); res(img); };
+      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('图片解码失败')); };
+      img.src = url;
+    });
+    if (window.createImageBitmap) {
+      return createImageBitmap(file, { imageOrientation: 'from-image' }).catch(viaImg);
+    }
+    return viaImg();
+  }
+
+  // 等比压缩到 maxSize 以内，输出 webp（不支持则 jpeg），base64 体积可缩小 90%+
+  function compressToDataURL(img, maxSize, quality) {
+    let w = img.width, h = img.height;
+    const scale = Math.min(1, maxSize / Math.max(w, h));
+    w = Math.max(1, Math.round(w * scale));
+    h = Math.max(1, Math.round(h * scale));
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(img, 0, 0, w, h);
+    if (typeof img.close === 'function') img.close(); // 释放 ImageBitmap 内存
+    const webp = c.toDataURL('image/webp', quality);
+    return webp.indexOf('data:image/webp') === 0 ? webp : c.toDataURL('image/jpeg', quality);
+  }
+
+  // 头像上传：label 原生关联触发（兼容所有移动端 WebView 内核，不依赖 JS .click()）
+  function onAvatarChosen(target, e) {
+    const f = e && e.target && e.target.files && e.target.files[0];
+    if (!f) return;
+    uploadTarget = target;
+    handleFile(f);
+  }
+  async function onFileChosen(e) {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    handleFile(f);
+  }
+  async function handleFile(f) {
+    try {
+      const isAvatar = uploadTarget === 'ta' || uploadTarget === 'me';
+      const img = await decodeImage(f);
+      const url = compressToDataURL(img, isAvatar ? 256 : 480, isAvatar ? 0.85 : 0.72);
+      let saved = true;
+      if (isAvatar) {
+        // ta=对方头像 / me=我的头像，按当前登录身份落位
+        const whoId = uploadTarget === 'ta' ? peerOf(currentUser) : currentUser;
+        saved = saveStore('avatar_' + whoId, url);
+        applyIdentity();
+        // 我的头像（me）更换时实时同步给对方手机上我的头像
+        if (uploadTarget === 'me' && whoId === currentUser) rtSend({ t: 'avatar', url: url });
+      } else if (uploadTarget && uploadTarget.indexOf('photo:') === 0) {
+        const pIdx = uploadTarget.replace('photo:', '');
+        saved = saveStore('photo_' + pIdx, url);
+        renderPhotos();
+        // 相册是双方共享的：实时同步这张照片给对方账号（单张发送，避免消息超限）
+        rtSend({ t: 'photo', idx: pIdx, url: url });
+      }
+      toast(saved ? '✅ 已保存，下次打开还在哦' : '⚠️ 手机存储空间不足，刷新后可能丢失');
+    } catch (err) {
+      console.error(err);
+      toast('❌ 图片处理失败，请换一张小一点的图');
+    }
+  }
+
+  function renderAvatars() {
+    if (currentUser) applyIdentity();
+  }
+
+  function renderPhotos() {
+    const grid = document.getElementById('photo-grid');
+    if (!grid) return;
+    const fallback = ['🌅', '💑', '🍰', '🏖️', '🌙', '🎂', '💐', '🍜', '🎮'];
+    let count = 0;
+    const html = [];
+    for (let i = 0; i < 30; i++) {
+      const url = getStore('photo_' + i);
+      if (!url) continue;
+      count++;
+      html.push('<button class="photo img" style="background-image:url(&quot;' + url + '&quot;)" onclick="pickFile(\'photo:' + i + '\')" title="点击更换"></button>');
+    }
+    for (let i = count; i < 9; i++) {
+      html.push('<button class="photo p-' + (i % 9 + 1) + '" onclick="pickFile(\'photo:' + i + '\')">' + fallback[i % 9] + '</button>');
+    }
+    html.push('<button class="photo add-photo" onclick="pickFile(\'photo:' + count + '\')">＋</button>');
+    grid.innerHTML = html.join('');
+    const pc = document.getElementById('photo-count');
+    if (pc) pc.textContent = count;
+  }
+  // 对方上线时把本地照片补齐给 Ta（仅"刷新/上线"时同步一次，10s 节流防风暴；静默发送不打扰）
+  let photoSyncAt = 0;
+  function syncPhotosToPeer() {
+    if (!RT.client || !RT.client.connected || !currentUser) return;
+    const now = Date.now();
+    if (now - photoSyncAt < 10000) return;   // 10s 节流：避免反复全量同步拖垮连接
+    photoSyncAt = now;
+    let sent = 0;
+    for (let i = 0; i < 30; i++) {
+      const url = getStore('photo_' + i);
+      if (!url) continue;                     // 遍历全部，即使中间有空位也补齐
+      try {
+        RT.client.publish(TOPIC_D(peerOf(currentUser)),
+          JSON.stringify({ t: 'photo', idx: String(i), url: url, silent: true }),
+          { qos: 0 });                        // qos 0 尽力而为，避免回执堆积加重连接
+        sent++;
+      } catch (e) {}
+    }
+    console.log('[photo] 已向对方补齐 ' + sent + ' 张照片');
+  }
+
+  // 对方上线时把"我的当下头像"发过去，确保对方刷新/登录后能看到我最新头像（与相册补齐一致）
+  let avatarSyncAt = 0;
+  function syncAvatarToPeer() {
+    if (!RT.client || !RT.client.connected || !currentUser) return;
+    const now = Date.now();
+    if (now - avatarSyncAt < 10000) return;   // 10s 节流：避免反复重发拖垮连接
+    avatarSyncAt = now;
+    const url = getStore('avatar_' + currentUser);
+    if (!url) return;                          // 我还没设过头像，无需补
+    try {
+      RT.client.publish(TOPIC_D(peerOf(currentUser)),
+        JSON.stringify({ t: 'avatar', url: url, silent: true }),
+        { qos: 0 });
+    } catch (e) {}
+    console.log('[avatar] 已向对方补齐我的头像');
+  }
+
+  // 对方上线时把"我的当下心情"发过去，确保对方刷新/登录后能看到我最新心情（与头像/相册补齐一致）
+  let moodSyncAt = 0;
+  function syncMoodToPeer() {
+    if (!RT.client || !RT.client.connected || !currentUser) return;
+    const now = Date.now();
+    if (now - moodSyncAt < 10000) return;   // 10s 节流：避免反复重发拖垮连接
+    moodSyncAt = now;
+    const m = getStore('my_mood');
+    if (!m) return;                          // 我还没设过心情，无需补
+    const parts = m.split('|');
+    const emoji = parts[0] || '', title = parts[1] || '', desc = parts.slice(2).join('|') || '';
+    try {
+      RT.client.publish(TOPIC_D(peerOf(currentUser)),
+        JSON.stringify({ t: 'mood', emoji: emoji, title: title, desc: desc, silent: true }),
+        { qos: 0 });
+    } catch (e) {}
+    console.log('[mood] 已向对方补齐我的心情');
+  }
+
+  // 对方上线时补齐恋爱开始日期 & 生日
+  function syncDatesToPeer() {
+    if (!RT.client || !RT.client.connected || !currentUser) return;
+    const dating = getStore('dating_start');
+    const bTa = getStore('birth_ta'), bMe = getStore('birth_me');
+    if (!dating && !bTa && !bMe) return;  // 还没设置过，不补
+    let bTaObj = null, bMeObj = null;
+    if (bTa) { const p = bTa.split('-'); if (p.length === 2) bTaObj = { m: parseInt(p[0]), d: parseInt(p[1]) }; }
+    if (bMe) { const p = bMe.split('-'); if (p.length === 2) bMeObj = { m: parseInt(p[0]), d: parseInt(p[1]) }; }
+    try {
+      RT.client.publish(TOPIC_D(peerOf(currentUser)),
+        JSON.stringify({ t: 'anniv_dates', dating, birth_ta: bTaObj, birth_me: bMeObj, silent: true }),
+        { qos: 0 });
+    } catch (e) {}
+    console.log('[dates] 已向对方补齐纪念日日期');
+  }
+
+  /* ===== 纪念日当天庆祝动画 ===== */
+  function checkCelebration() {
+    const ds = getDatingStart();
+    if (!ds) return;
+    const t = today0();
+    const days = diffDays(t, ds);
+    const isAnniv   = t.getMonth() === ds.getMonth() && t.getDate() === ds.getDate();
+    const isHundred = days > 0 && days % 100 === 0;
+    const bMe = getBirth('me'), bTa = getBirth('ta');
+    const isMeBd = bMe && t.getMonth() === bMe.m && t.getDate() === bMe.d;
+    const isTaBd = bTa && t.getMonth() === bTa.m && t.getDate() === bTa.d;
+    const nameMe = ACCOUNTS.me.name, nameTa = ACCOUNTS.ta.name;
+    let title = '', sub = '', big = '🎉';
+    if (isMeBd)         { big = '🎂'; title = nameMe + '生日快乐！'; sub = '今天是属于你的日子 💝'; }
+    else if (isTaBd)    { big = '🎂'; title = nameTa + '生日快乐！'; sub = '你是今天的主角，生日快乐 🎈'; }
+    else if (isAnniv)   { big = '💞'; title = '在一起纪念日快乐！'; sub = '这是我们相爱的第 ' + days + ' 天'; }
+    else if (isHundred) { big = '🎉'; title = '在一起 ' + days + ' 天啦！'; sub = '每个整百天都值得好好庆祝'; }
+    else return;
+    document.getElementById('c-big').textContent = big;
+    document.getElementById('c-title').textContent = title;
+    document.getElementById('c-sub').textContent = sub;
+    document.getElementById('celebrate').classList.add('show');
+    launchFireworks();
+  }
+
+  function launchFireworks() {
+    const canvas = document.getElementById('fx-canvas');
+    const box = canvas.parentElement;
+    canvas.width = box.clientWidth;
+    canvas.height = box.clientHeight;
+    const ctx = canvas.getContext('2d');
+    const colors = ['#FFD94D', '#FF6B9D', '#B388FF', '#4CD9A9', '#FFFFFF', '#FF9A5C'];
+    const parts = [];
+    function boom(x, y) {
+      for (let i = 0; i < 52; i++) {
+        const a = Math.random() * Math.PI * 2;
+        const v = 1.4 + Math.random() * 4.6;
+        parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 60 + Math.random() * 34, c: colors[Math.floor(Math.random() * colors.length)], r: 1.5 + Math.random() * 2.2 });
+      }
+    }
+    const shots = [];
+    for (let i = 0; i < 12; i++) shots.push({ at: 300 + i * 260, fired: false });
+    const t0 = performance.now();
+    function frame(now) {
+      const el = (now - t0) / 1000;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const s of shots) {
+        if (!s.fired && el * 1000 >= s.at) {
+          boom(canvas.width * (0.15 + Math.random() * 0.7), canvas.height * (0.2 + Math.random() * 0.4));
+          s.fired = true;
+        }
+      }
+      for (let i = parts.length - 1; i >= 0; i--) {
+        const p = parts[i];
+        p.x += p.vx; p.y += p.vy; p.vy += 0.052; p.vx *= 0.986; p.vy *= 0.986; p.life--;
+        if (p.life <= 0) { parts.splice(i, 1); continue; }
+        ctx.globalAlpha = Math.min(1, p.life / 26);
+        ctx.fillStyle = p.c;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      if (el < 3.8 && parts.length) requestAnimationFrame(frame);
+      else ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* ===== 启动：渲染 + 恢复登录态 ===== */
+  renderAnniv();
+  renderPhotos();
+  checkCelebration();
+  renderActivities();
+  rebuildAccounts('');   // 初始化 ACCOUNTS 为默认对（无登录态时用）
+  renderLoginAccounts();
+  const sess = getStore('session_user');
+  if (sess && sess.indexOf(':') > 0) {
+    const sp = sess.split(':');
+    loginAs(sp[1], sp[0], true);
+  } else {
+    renderAvatars();
+  }
+
+  // 演示入口：地址栏加 #demo（如 lovely-app.html#demo）可立即预览庆祝动画
+  if (location.hash === '#demo') {
+    document.getElementById('c-big').textContent = '🎉';
+    document.getElementById('c-title').textContent = '在一起 3200 天！';
+    document.getElementById('c-sub').textContent = '每个整百天都值得好好庆祝';
+    document.getElementById('celebrate').classList.add('show');
+    launchFireworks();
+  }
+
+  /* 连接徽标：页面滚动时自动淡出，避免遮挡纪念日/心情等卡片；回到顶部恢复显示 */
+  (function () {
+    const badge = document.getElementById('rt-status');
+    if (!badge) return;
+    let last = null;
+    const check = () => {
+      const pageScrolled = (window.scrollY || document.documentElement.scrollTop || document.body.scrollTop) > 24;
+      const active = document.querySelector('.page.active');
+      const innerScrolled = !!(active && active.scrollTop > 24);
+      const scrolled = pageScrolled || innerScrolled;
+      if (scrolled !== last) {
+        last = scrolled;
+        badge.classList.toggle('scrolled', scrolled);
+      }
+    };
+    window.addEventListener('scroll', check, { passive: true });
+    document.addEventListener('scroll', check, { passive: true });
+    document.querySelectorAll('.page').forEach(p => p.addEventListener('scroll', check, { passive: true }));
+    setInterval(check, 500); // 轮询兜底：兼容手机浏览器滚动事件差异
+  })();
+
+  /* 注册 Service Worker（PWA 离线支持） */
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+
+  /* 渲染界面版本号（登录页/首页/账号面板） */
+  renderVersion();
+</script>
+</body>
+</html>

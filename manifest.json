@@ -1,0 +1,26 @@
+{
+  "name": "树与璇",
+  "short_name": "树与璇",
+  "description": "树树 & 璇璇 的专属小屋：心情同步、纪念日倒数、甜蜜相册、一键提醒",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF5F9",
+  "theme_color": "#FF6B9D",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
